@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Sistema Experto Médico</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f3f4f6;
-            background-image: url('https://example.com/background-image.jpg'); /* URL de tu imagen de fondo */
+               background-image: url('{{ url_for('static', filename='img/banner.png') }}'); 
             background-size: cover;
             background-position: center;
-            background-blend-mode: overlay; /* Aplica el modo de mezcla de superposición */
+            background-blend-mode: overlay; 
         }
         .register-container {
             max-width: 400px;
@@ -26,8 +27,6 @@
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #333333;
-            text-align: center;
         }
         .form-input {
             width: 100%;
@@ -47,7 +46,7 @@
             padding: 12px;
             border: none;
             border-radius: 4px;
-            background-color: #4f46e5;
+            background-color: #16c2d5;
             color: #ffffff;
             font-size: 16px;
             font-weight: bold;
@@ -55,14 +54,14 @@
             transition: background-color 0.3s ease;
         }
         .form-submit-btn:hover {
-            background-color: #4338ca;
+            background-color: #168cd5;
         }
         .form-footer {
             margin-top: 20px;
             text-align: center;
         }
         .form-footer a {
-            color: #4f46e5;
+            color: #16c2d5;
             text-decoration: none;
             font-weight: bold;
         }
@@ -70,6 +69,7 @@
             text-decoration: underline;
         }
     </style>
+
 </head>
 <body>
 
@@ -80,7 +80,7 @@
         <input type="email" name="email" placeholder="Correo electrónico" class="form-input" required>
         <select name="tipo" class="form-input" required>
             <option value="" disabled selected>Tipo de usuario</option>
-            <option value="doctor">Doctor</option>
+            <option value="medico">Medico</option>
             <option value="enfermera">Enfermera</option>
             <option value="administrativo">Administrativo</option>
         </select>

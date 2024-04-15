@@ -28,21 +28,58 @@ def login():
     # De lo contrario, redirigir de nuevo al formulario de inicio de sesión con un mensaje de error
     return redirect(url_for('home'))
 
-@app.route('/home')
+@app.route('/admin/home')
 def home():
-    return render_template('home.html')
+    return render_template('home_A.html')
 
-@app.route('/doctor/CRUD')
-def dCRUD():
-    return render_template('CRUD.html')
+@app.route('/admin/CRUD/usuarios')
+def admin_uCRUD():
+    return render_template('CRUD_usuarios.html')
 
-@app.route('/admin/CRUD')
-def aCRUD():
-    return render_template('CRUD.html')
+@app.route('/admin/CRUD/sintomas')
+def admin_sintCRUD():
+    return render_template('CRUD_sintomas.html')
 
-@app.route('/secretaria/CRUD')
-def sCRUD():
-    return render_template('CRUD.html')
+@app.route('/admin/CRUD/signos')
+def admin_signCRUD():
+    return render_template('CRUD_signos.html')
+
+@app.route('/admin/CRUD/enfermedades')
+def admin_eCRUD():
+    return render_template('CRUD_enfermedades.html')
+
+@app.route('/admin/CRUD/pacientes')
+def admin_pCRUD():
+    return render_template('CRUD_pacientes.html')
+
+@app.route('/admin/CRUD/citas')
+def admin_cCRUD():
+    return render_template('CRUD_citas.html')
+
+@app.route('/medico/home')
+def homeM():
+    return render_template('home_M.html')
+
+@app.route('/medico/CRUD/pacientes')
+def med_pCRUD():
+    return render_template('CRUD_pacientes.html')
+
+@app.route('/medico/CRUD/citas')
+def med_cCRUD():
+    return render_template('CRUD_citas.html')
+
+@app.route('/secretaria/home')
+def homeS():
+    return render_template('home_S.html')
+
+@app.route('/secretaria/CRUD/pacientes')
+def sec_pCRUD():
+    return render_template('CRUD_pacientes.html')
+
+@app.route('/secretaria/CRUD/citas')
+def sec_cCRUD():
+    return render_template('CRUD_citas.html')
+
 
 
 @app.route('/register')
