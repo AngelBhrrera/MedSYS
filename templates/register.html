@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesión - Sistema Experto Médico</title>
+    <title>Registro - Sistema Experto Médico</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f3f4f6;
-               background-image: url('{{ url_for('static', filename='img/banner.png') }}'); 
+            background-image: url('https://example.com/background-image.jpg'); /* URL de tu imagen de fondo */
             background-size: cover;
             background-position: center;
-            background-blend-mode: overlay; 
+            background-blend-mode: overlay; /* Aplica el modo de mezcla de superposición */
         }
-        .login-container {
+        .register-container {
             max-width: 400px;
-            margin: 100px auto 0 auto; 
+            margin: 100px auto 0 auto; /* Margen superior grande */
             padding: 40px;
             border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.8); 
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
-        .login-title {
+        .register-title {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
@@ -73,19 +73,25 @@
 </head>
 <body>
 
-<div class="login-container">
-    <h2 class="login-title">Iniciar sesión</h2>
-    <form action="{{ url_for('login') }}" method="POST">
-   	<input type="text" name="username" placeholder="Nombre de usuario" class="form-input" required>
-    	<input type="password" name="password" placeholder="Contraseña" class="form-input" required>
-    	<button type="submit" class="form-submit-btn">Iniciar sesión</button>
-	</form>
+<div class="register-container">
+    <h2 class="register-title">Registro</h2>
+    <form action="#" method="POST">
+	<input type="text" name="name" placeholder="Nombre completo" class="form-input" required>
+        <input type="email" name="email" placeholder="Correo electrónico" class="form-input" required>
+        <select name="tipo" class="form-input" required>
+            <option value="" disabled selected>Tipo de usuario</option>
+            <option value="doctor">Doctor</option>
+            <option value="enfermera">Enfermera</option>
+            <option value="administrativo">Administrativo</option>
+        </select>
+        <input type="password" name="password" placeholder="Contraseña" class="form-input" required>
+        <input type="password" name="confirm_password" placeholder="Confirmar contraseña" class="form-input" required>
+        <button type="submit" class="form-submit-btn">Registrarse</button>
+    </form>
     <div class="form-footer">
-        <a href="#">¿Olvidaste tu contraseña?</a>
+        <a href="/">¿Ya tienes una cuenta? Inicia sesión aquí</a>
     </div>
 </div>
-<div class="login-container">
-	<button type="button" class="form-submit-btn" onclick="window.location.href='/register'">Registrar nuevo usuario</button>
-</div>
+
 </body>
 </html>
