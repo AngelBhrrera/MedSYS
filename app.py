@@ -52,6 +52,10 @@ def admin_eCRUD():
 def admin_pCRUD():
     return render_template('CRUD_pacientes.html')
 
+@app.route('/admin/CRUD/pruebas')
+def admin_prCRUD():
+    return render_template('CRUD_pruebas.html')
+
 @app.route('/admin/CRUD/citas')
 def admin_cCRUD():
     return render_template('CRUD_citas.html')
