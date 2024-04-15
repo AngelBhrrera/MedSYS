@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <!-- Barra superior -->
-    <?php include 'topbar.php'; ?>
+    {% include 'topbar.html' %}
     
     <!-- Contenido principal -->
     <div class="container">
         <!-- Barra lateral -->
-        <?php include 'sidebar.php'; ?>
+        {% include 'sidebar.html' %}
 
         <!-- Contenido principal -->
         <div class="main-content">

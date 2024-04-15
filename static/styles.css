@@ -1,0 +1,79 @@
+/* Posicionar los elementos */
+.container {
+    display: flex;
+}
+.topbar, .sidebar {
+    background-color: #f0f0f0;
+    padding: 10px;
+}
+.topbar {
+    width: 100%;
+}
+.sidebar {
+    width: 200px;
+}
+.main-content {
+    flex: 1;
+    padding: 10px;
+}
+
+/* Topbar */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #16c2d5;
+    color: white;
+    padding: 10px;
+}
+
+.profile-image img {
+    border-radius: 50%; /* Para redondear la imagen */
+}
+
+.settings,
+.notifications,
+.logout {
+    margin-left: 10px;
+}
+
+/* Enlaces en el topbar */
+.topbar a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px; 
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.topbar a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: white; 
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #89dee2;
+    width: 200px;
+    height: 100vh;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    padding: 10px;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: black;
+}
+
+.sidebar ul li a:hover {
+    color: #16c2d5;
+}

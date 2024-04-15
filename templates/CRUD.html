@@ -16,46 +16,48 @@
   .btn-delete { background-color: #F44336; }
   .btn-add { background-color: #4CAF50; color: white; padding: 10px 20px; }
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+<!-- Barra superior -->
+    {% include 'topbar.html' %}
+    
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Barra lateral -->
+        {% include 'sidebar.html' %}
 
-<div class="sidebar">
-  <h2>T-Server</h2>
-  <a href="#">Diagnóstico</a>
-  <a href="#">Usuarios</a>
-  <a href="#">Pacientes</a>
-  <!-- Más enlaces aquí -->
-</div>
-
-<div class="main-content">
-  <h1>Usuarios</h1>
-  <button class="btn btn-add">Agregar Usuario</button>
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Correo</th>
-      <th>País</th>
-      <th>Status</th>
-      <th>Imagen</th>
-      <th>Acciones</th>
-    </tr>
-    <!-- Los registros de usuarios irían aquí -->
-    <tr>
-      <td>1</td>
-      <td>Nombre Usuario</td>
-      <td>correo@ejemplo.com</td>
-      <td>País</td>
-      <td>Activo</td>
-      <td>Imagen</td>
-      <td>
-        <button class="btn btn-edit">Editar</button>
-        <button class="btn btn-delete">Eliminar</button>
-      </td>
-    </tr>
-    <!-- Más registros -->
-  </table>
-</div>
+        <!-- Contenido principal -->
+		<div class="main-content">
+  			<h1>Usuarios</h1>
+  			<button class="btn btn-add">Agregar Usuario</button>
+  			<table>
+    				<tr>
+      					<th>ID</th>
+      					<th>Nombre</th>
+      					<th>Correo</th>
+      					<th>País</th>
+      					<th>Status</th>
+      					<th>Imagen</th>
+      					<th>Acciones</th>
+    				</tr>
+    	<!-- Los registros de usuarios irían aquí -->
+    				<tr>
+      					<td>1</td>
+      					<td>Nombre Usuario</td>
+      					<td>correo@ejemplo.com</td>
+      					<td>País</td>
+      					<td>Activo</td>
+      					<td>Imagen</td>
+      					<td>
+        					<button class="btn btn-edit">Editar</button>
+        					<button class="btn btn-delete">Eliminar</button>
+      					</td>
+    				</tr>
+    	<!-- Más registros -->
+  			</table>
+		</div>
+	</div>
 
 </body>
 </html>
