@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRUD de Usuarios</title>
+<style>
+  body { font-family: Arial, sans-serif; }
+  .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
+  .main-content { margin-left: 200px; padding: 20px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background-color: #16c2d5; color: white; }
+  .btn { padding: 5px 10px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+  .btn-edit { background-color: #FFC107; }
+  .btn-delete { background-color: #F44336; }
+  .btn-add { background-color: #16c2d5; color: white; padding: 10px 20px; }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<!-- Barra superior -->
+    {% include 'topbar.html' %}
+    
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Barra lateral -->
+        {% include 'sidebarA.html' %}
+
+        <!-- Contenido principal -->
+		<div class="main-content">
+  			<h1>Citas</h1>
+  			<button class="btn btn-add">Agregar Cita</button>
+  			<table>
+    				<tr>
+      					<th>Fecha</th>
+      					<th>Paciente</th>
+      					<th>Doctor</th>
+      					<th>Estado</th>
+      					<th>Hora</th>
+      					<th>Observaciones</th>
+      					<th>Acciones</th>
+    				</tr>
+    	<!-- Los registros de usuarios irían aquí -->
+    				<tr>
+      					<td>25/03/2024</td>
+      					<td>Armando Casas</td>
+      					<td>Roberto Lopez</td>
+      					<td>Realizada</td>
+      					<td>17:00</td>
+      					<td>Urgente</td>
+      					<td>
+        					<button class="btn btn-edit">Editar</button>
+        					<button class="btn btn-delete">Eliminar</button>
+      					</td>
+    				</tr>
+    	<!-- Más registros -->
+  			</table>
+		</div>
+	</div>
+
+</body>
+</html>
