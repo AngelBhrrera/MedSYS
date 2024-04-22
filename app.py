@@ -58,7 +58,7 @@ def home():
     if 'loggedin' in session:
         if session['role'] == 0:
             return render_template('home_A.html')
-        if session['role'] == '1':
+        if session['role'] == 1:
             return render_template('home_M.html')
         if session['role'] == 2:
             return render_template('home_S.html')
