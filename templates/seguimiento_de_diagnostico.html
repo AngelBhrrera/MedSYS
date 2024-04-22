@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguimiento de Diagnóstico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f8fa;
+        }
+        .secondtainer {
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-right: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1da1f2;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #1da1f2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #0d8bf9;
+        }
+        .result {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f0f8ff;
+        }
+        .result h2 {
+            color: #1da1f2;
+        }
+        .result ul {
+            list-style: none;
+            padding: 0;
+        }
+        .result ul li {
+            margin-bottom: 5px;
+        }
+        .result form {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra superior -->
+    {% include 'topbar.html' %}
+    
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Barra lateral -->
+        {% include 'sidebarA.html' %}
+        
+        <!-- Contenedor principal -->
+        <div class="secondtainer">
+            <h1>Seguimiento de Diagnóstico</h1>
+            <form action="procesar_seguimiento.php" method="POST">
+                <label for="paciente">Nombre o número de identificación del paciente:</label>
+                <input type="text" id="paciente" name="paciente" required>
+                <input type="submit" value="Buscar">
+            </form>
+
+            <!-- Ejemplo de resultado -->
+            <div class="result">
+                <h2>Última Consulta</h2>
+                <p>Fecha: 2024-04-15</p>
+                <p>Enfermedades Posibles:</p>
+                <ul>
+                    <li>Enfermedad A - 60%</li>
+                    <li>Enfermedad B - 30%</li>
+                    <li>Enfermedad C - 10%</li>
+                </ul>
+                <form action="procesar_resultado.php" method="POST">
+                    <label for="resultado">Resultado de la Prueba de Laboratorio:</label>
+                    <select id="resultado" name="resultado" required>
+                        <option value="positivo">Positivo</option>
+                        <option value="negativo">Negativo</option>
+                    </select>
+                    <input type="submit" value="Guardar Resultado">
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
