@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRUD de Usuarios</title>
+<title>CRUD de Pacientes</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <style>
   body { font-family: Arial, sans-serif; }
   .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
@@ -39,29 +41,148 @@
       					<th>Edad</th>
       					<th>Sexo</th>
       					<th>Nacionalidad</th>
-					<th>Estatura</th>
-					<th>Peso</th>										
-					<th>Acciones</th>
-    				</tr>
+						<th>Estatura</th>
+						<th>Peso</th>										
+						<th>Acciones</th>
+						</tr>
     	<!-- Los registros de usuarios irían aquí -->
+				{% for usuario in pacientes %}
     				<tr>
-      					<td>Armando</td>
-      					<td>Casas</td>
-      					<td>15/04/1982</td>
-      					<td>42</td>
-      					<td>H</td>
-      					<td>Mexicano</td>
-      					<td>1.71</td>
-      					<td>80</td>
+      					<td>{{ usuario[1] }}</td>
+      					<td>{{ usuario[2] }}</td>
+      					<td>{{ usuario[3] }}</td>
+      					<td>{{ usuario[4] }}</td>
+      					<td>{{ usuario[5] }}</td>
+      					<td>{{ usuario[6] }}</td>
+      					<td>{{ usuario[7] }}</td>
+      					<td>{{ usuario[8] }}</td>
       					<td>
-        					<button class="btn btn-edit">Editar</button>
-        					<button class="btn btn-delete">Eliminar</button>
-      					</td>
+							<button class="btn btn-edit" data-id="{{ usuario }}">Editar</button>
+							<form method="post" action="/{{ role }}/CRUD/Pacientes/eliminar/{{ usuario[0] }}">
+								<input type="submit" class="btn btn-delete" value="Eliminar">
+							</form>
+						</td>
     				</tr>
-    	<!-- Más registros -->
+				{% endfor %}
   			</table>
 		</div>
 	</div>
+	
+	<!-- Modal para agregar pacientes -->
+	<div class="modal fade" id="agregarPacienteModal" tabindex="-1" aria-labelledby="agregarPacienteModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="agregarPacienteModalLabel">Agregar Paciente</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			<form id="agregarPacienteForm" method="post" action="/{{ role }}/CRUD/Paciente/agregar">
+				<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+				<input type="text" name="apellido" placeholder="Apellido" class="form-input" required>
+				<input type="date" name="fecha_n" placeholder="Fecha de Nacimiento" class="form-input" required>
+				<input type="number" step="0.01" name="estatura" placeholder="Estatura" class="form-input" required>
+				<input type="number" name="edad" placeholder="Edad" class="form-input" required>
+				<input type="number" step="0.01" name="peso" placeholder="Peso" class="form-input" required>
+				<select name="sexo" class="form-input" required>
+					<option value="" disabled selected>Sexo</option>
+					<option value="H">Hombre</option>
+					<option value="M">Mujer</option>
+					<option value="N">No definido</option>
+				</select>
+				<select name="nacionalidad" class="form-input" required>
+					<option value="" disabled selected>Nacionalidad del paciente</option>
+					<option value="US">🇺🇸 Estados Unidos</option>
+					<option value="MX">🇲🇽 México</option>
+					<option value="ES">🇪🇸 España</option>
+					<option value="JP">🇯🇵 Japón</option>
+				</select>
+			</form>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			<button type="submit" form="agregarPacienteForm" class="btn btn-primary">Crear</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	
+	<!-- Modal para editar pacientes -->
+	<div class="modal fade" id="editarPacienteModal" tabindex="-1" aria-labelledby="editarPacienteModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="editarUsuarioModalLabel">Editar Paciente</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			<form id="editarPacienteForm" method="post" action="/{{ role }}/CRUD/Paciente/editar/">
+				<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+				<input type="text" name="apellido" placeholder="Apellido" class="form-input" required>
+				<input type="date" name="fecha_n" placeholder="Fecha de Nacimiento" class="form-input" required>
+				<input type="number" step="0.01" name="estatura" placeholder="Estatura" class="form-input" required>
+				<input type="number" name="edad" placeholder="Edad" class="form-input" required>
+				<input type="number" step="0.01" name="peso" placeholder="Peso" class="form-input" required>
+				<select name="sexo" class="form-input" required>
+					<option value="" disabled selected>Sexo</option>
+					<option value="H">Hombre</option>
+					<option value="M">Mujer</option>
+					<option value="N">No definido</option>
+				</select>
+				<select name="nacionalidad" class="form-input" required>
+					<option value="" disabled selected>Nacionalidad del paciente</option>
+					<option value="US">🇺🇸 Estados Unidos</option>
+					<option value="MX">🇲🇽 México</option>
+					<option value="ES">🇪🇸 España</option>
+					<option value="JP">🇯🇵 Japón</option>
+				</select>
+			</form>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			<button type="submit" form="editarUsuarioForm" class="btn btn-primary">Editar</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
 
 </body>
+
+<script>
+	function padToTwoDigits(number) {
+		return number.toString().padStart(2, '0');
+	}
+
+	$('.btn-add').click(function() {
+		$('#agregarPacienteModal').modal('show');
+	});
+
+	$('.btn-edit').click(function() {
+	
+		var dataString = $(this).data('id');
+		var dataPattern = /(\d+), '(\w+)', '(\w+)', datetime\.date\((\d{4}), (\d{1,2}), (\d{1,2})\), (\d+), (\d+\.\d+), (\d+\.\d+), '(\w)', '(\w{2})'/;
+		var dataMatch = dataString.match(dataPattern);
+
+		if (dataMatch) {
+			var dataArray = dataMatch.slice(1); // Elimina el primer elemento que es la cadena completa
+			date = dataArray[3] + '-' + padToTwoDigits(dataArray[4]) + '-' + padToTwoDigits(dataArray[5]) ;
+			console.log(date)
+			$('#editarPacienteForm input[name="nombre"]').val(dataArray[1]);
+			$('#editarPacienteForm input[name="apellido"]').val(dataArray[2]);
+			$('#editarPacienteForm input[name="fecha_n"]').val(date);
+			$('#editarPacienteForm input[name="estatura"]').val(dataArray[6]);
+			$('#editarPacienteForm input[name="edad"]').val(dataArray[7]);
+			$('#editarPacienteForm input[name="peso"]').val(dataArray[8]);
+			$('#editarPacienteForm select[name="sexo"]').val(dataArray[9]);
+			$('#editarPacienteForm select[name="nacionalidad"]').val(dataArray[10]);
+
+			$('#editarPacienteForm').attr('action', '/{{ role }}/CRUD/Paciente/editar/' + dataArray[0]);
+
+			$('#editarPacienteModal').modal('show');
+		} else {
+			console.log("La cadena no coincide con el patrón esperado.");
+		}
+	});
+</script>
+
 </html>

@@ -67,8 +67,27 @@ def crud(role, entity):
             cursor = mysql.connection.cursor()
             cursor.execute('SELECT * FROM usuarios')
             usuarios = cursor.fetchall()
-            print(usuarios)
             return render_template(f'CRUD_{entity}.html',usuarios = usuarios, role = role)
+        if entity == 'Pacientes':
+            cursor = mysql.connection.cursor()
+            cursor.execute('SELECT * FROM pacientes')
+            pacientes = cursor.fetchall()
+            return render_template(f'CRUD_{entity}.html',pacientes = pacientes, role = role)
+        if entity == 'Enfermedades':
+            cursor = mysql.connection.cursor()
+            cursor.execute('SELECT * FROM enfermedades')
+            enfermedades = cursor.fetchall()
+            return render_template(f'CRUD_{entity}.html',enfermedades = enfermedades, role = role)
+        if entity == 'Signos':
+            cursor = mysql.connection.cursor()
+            cursor.execute('SELECT * FROM signos_sintomas WHERE tipo = 0')
+            signos = cursor.fetchall()
+            return render_template(f'CRUD_{entity}.html',signos = signos, role = role)
+        if entity == 'Sintomas':
+            cursor = mysql.connection.cursor()
+            cursor.execute('SELECT * FROM signos_sintomas WHERE tipo = 1')
+            sintomas = cursor.fetchall()
+            return render_template(f'CRUD_{entity}.html',sintomas = sintomas, role = role)
 
         return render_template(f'CRUD_{entity}.html')
     else:
@@ -83,6 +102,19 @@ def agregar_entidad(rol, entity):
         role = request.form['role']
         cursor = mysql.connection.cursor()
         cursor.execute('INSERT INTO usuarios (name, email, password, role) VALUES (%s, %s, %s, %s)', (name, email, password, role,))
+        mysql.connection.commit()
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico', 'secretaria'] and entity == 'Pacientes':
+        nombre = request.form['nombre']
+        apellido = request.form['apellido']
+        fecha_n = request.form['fecha_n']
+        estatura = request.form['estatura']
+        edad = request.form['edad']
+        peso = request.form['peso']
+        sexo = request.form['sexo']
+        nacionalidad = request.form['nacionalidad']
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO pacientes (nombre, apellido, fecha_nacimiento, estatura, edad, peso, sexo, nacionalidad) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', (nombre, apellido, fecha_n, estatura, edad, peso, sexo, nacionalidad,))
         mysql.connection.commit()
         return redirect(request.referrer)
     else:
