@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CRUD de Usuarios</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <style>
   body { font-family: Arial, sans-serif; }
   .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
@@ -33,53 +35,121 @@
   			<button class="btn btn-add">Agregar Usuario</button>
   			<table>
     				<tr>
-      					<th>ID</th>
       					<th>Nombre Completo</th>
       					<th>Correo</th>
       					<th>Rol</th>
-					<th>Contacto</th>
       					<th>Acciones</th>
     				</tr>
     	<!-- Los registros de usuarios irían aquí -->
-    				<tr>
-      					<td>1</td>
-      					<td>Superadmin</td>
-      					<td>admin@admin.com</td>
-      					<td>admin</td>
-					<td>-</td>
-
-      					<td>
-        					<button class="btn btn-edit">Editar</button>
-        					<button class="btn btn-delete">Eliminar</button>
-      					</td>
-    				</tr>
-    	<!-- Más registros -->
+    		{% for usuario in usuarios %}
 				<tr>
-      					<td>2</td>
-      					<td>Roberto Lopez</td>
-      					<td>medicolopez@gmail.com</td>
-      					<td>Medico</td>
-					<td>3340540409</td>
-      					<td>
-        					<button class="btn btn-edit">Editar</button>
-        					<button class="btn btn-delete">Eliminar</button>
-      					</td>
-    				</tr>
-				<tr>
-      					<td>3</td>
-      					<td>Sara Muñoz</td>
-      					<td>medicalservices@gmail.com</td>
-      					<td>Secretaria</td>
-					<td>335048938</td>
-      					<td>
-        					<button class="btn btn-edit">Editar</button>
-        					<button class="btn btn-delete">Eliminar</button>
-      					</td>
-    				</tr>
-
-  			</table>
+					<td>{{ usuario[1] }}</td>
+					<td>{{ usuario[2] }}</td>
+					<td>
+						{% if usuario[3] == 0 %}
+							admin
+						{% elif usuario[3] == 1 %}
+							medico
+						{% elif usuario[3] == 2 %}
+							secretaria
+						{% endif %}
+					</td>
+					<td>
+						<button class="btn btn-edit" data-id="{{ usuario[0] }}" data-name="{{ usuario[1] }}" data-email="{{ usuario[2] }}" data-role="{{ usuario[3] }}">Editar</button>
+						<form method="post" action="/{{ role }}/CRUD/Usuarios/eliminar/{{ usuario[0] }}">
+							{% if usuario[3] < 3 %}
+								<input type="submit" class="btn btn-delete" value="Eliminar">
+							{% else %}
+								<input type="submit" class="btn btn-primary" value="Reactivar">
+							{% endif %}
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+			</table>
 		</div>
+	</div>
+	
+	<!-- Modal para agregar usuario -->
+	<div class="modal fade" id="agregarUsuarioModal" tabindex="-1" aria-labelledby="agregarUsuarioModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="agregarUsuarioModalLabel">Agregar Usuario</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			<form id="agregarUsuarioForm" method="post" action="/{{ role }}/CRUD/Usuarios/agregar">
+				<input type="text" name="name" placeholder="Nombre completo" class="form-input" required>
+				<input type="email" name="email" placeholder="Correo electrónico" class="form-input" required>
+				<select name="role" class="form-input" required>
+					<option value="" disabled selected>Tipo de usuario</option>
+				<option value="0">Administrativo</option>
+					<option value="1">Medico</option>
+					<option value="2">Secretaria</option>
+				</select>
+				<input type="password" name="password" placeholder="Contraseña" class="form-input" required>
+				<input type="password" name="confirm_password" placeholder="Confirmar contraseña" class="form-input" required>
+			</form>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			<button type="submit" form="agregarUsuarioForm" class="btn btn-primary">Crear</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	
+	<!-- Modal para editar usuario -->
+	<div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="editarUsuarioModalLabel">Editar Usuario</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			<form id="editarUsuarioForm" method="post" action="/{{ role }}/CRUD/Usuarios/editar/">
+				<input type="text" name="name" placeholder="Nombre completo" class="form-input" required>
+				<input type="email" name="email" placeholder="Correo electrónico" class="form-input" required>
+				<select name="role" class="form-input" required>
+					<option value="" disabled selected>Tipo de usuario</option>
+				<option value="0">Administrativo</option>
+					<option value="1">Medico</option>
+					<option value="2">Secretaria</option>
+				</select>
+			</form>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			<button type="submit" form="editarUsuarioForm" class="btn btn-primary">Editar</button>
+		  </div>
+		</div>
+	  </div>
 	</div>
 
 </body>
+
+<script>
+$('.btn-add').click(function() {
+    $('#agregarUsuarioModal').modal('show');
+});
+
+$('.btn-edit').click(function() {
+    var userId = $(this).data('id');
+    var userName = $(this).data('name');
+    var userEmail = $(this).data('email');
+    var userRole = $(this).data('role');
+
+    $('#editarUsuarioForm input[name="name"]').val(userName);
+    $('#editarUsuarioForm input[name="email"]').val(userEmail);
+    $('#editarUsuarioForm select[name="role"]').val(userRole);
+
+    $('#editarUsuarioForm').attr('action', '/{{ role }}/CRUD/Usuarios/editar/' + userId);
+
+    $('#editarUsuarioModal').modal('show');
+});
+</script>
+
+
 </html>

@@ -4,38 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Topbar</title>
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
    <!-- Barra lateral -->
    <div class="sidebar">
     <h3>Menu</h3>
-    <ul>
-        <li><a href="/admin/CRUD/citas">Citas</a></li>
-        <li><a href="/admin/CRUD/pacientes">Pacientes</a></li>
-        {% if session['role'] == 0 %}
-            <!-- Mostrar opciones específicas para el administrador -->
-            <li><a href="/admin/CRUD/citas">Citas</a></li>
-            <li><a href="/admin/CRUD/pacientes">Pacientes</a></li>
-            <li><a href="/admin/CRUD/usuarios">Gestión de Usuarios</a></li>
-            <li><a href="/admin/CRUD/enfermedades">Gestión de Enfermedades</a></li>
-            <li><a href="/admin/CRUD/sintomas">Gestión de Síntomas</a></li>
-            <li><a href="/admin/CRUD/signos">Gestión de Signos</a></li>
-            <li><a href="/admin/historial_paciente">Historial de paciente</a></li>
-            <li><a href="/admin/seguimiento_diagnostico">Seguimiento de diagnostico</a></li>
-            <li><a href="/admin/CRUD/pruebas">Gestión de Pruebas</a></li>
-        {% elif session['role'] == 1 %}
-            <!-- Mostrar opciones específicas para el médico -->
-            <li><a href="/medico/CRUD/pacientes">Gestión de Pacientes</a></li>
-            <li><a href="/medico/CRUD/citas">Gestión de Citas</a></li>
-            <li><a href="/medico/historial_paciente">Historial de Paciente</a></li>
-            <li><a href="/medico/seguimiento_diagnostico">Seguimiento de Diagnóstico</a></li>
-        {% elif session['role'] == 2 %}
-            <!-- Mostrar opciones específicas para la secretaria -->
-            <li><a href="/secretaria/CRUD/pacientes">Gestión de Pacientes</a></li>
-            <li><a href="/secretaria/CRUD/citas">Gestión de Citas</a></li>
-        {% endif %}
-    </ul>
+    {% set options = {
+		'admin': ['Usuarios', 'Enfermedades', 'Sintomas', 'Signos', 'Historial', 'Seguimiento_Diagnostico', 'Pruebas'],
+		'medico': ['Pacientes', 'Citas', 'Historial', 'Seguimiento_Diagnostico'],
+		'secretaria': ['Pacientes', 'Citas']
+	} %}
+
+	<ul>
+		{% for option in options[session['role']] %}
+			{% if option in ['Historial', 'Seguimiento_Diagnostico'] %}
+				<li><a href="/{{ session['role'] }}/{{ option }}">{{ option }}</a></li>
+			{% else %}
+				<li><a href="/{{ session['role'] }}/CRUD/{{ option }}">{{ option }}</a></li>
+			{% endif %}
+		{% endfor %}
+	</ul>
 </div>
 
 </body>

@@ -18,6 +18,7 @@ app.config['MYSQL_DB'] = 'medsys'
 mysql = MySQL(app)
 # Configuración para la carpeta estática
 app.static_folder = 'static'
+role_map = {0: 'admin', 1: 'medico', 2: 'secretaria'}
 
 @app.route('/')
 def index():
@@ -34,8 +35,8 @@ def login():
         if user:
             session['loggedin'] = True
             session['name'] = user[1]
-            session['role'] = user[3]
-            return redirect(url_for('home'))
+            session['role'] = role_map[user[3]]
+            return redirect(url_for('home', role=session["role"]))
         else:
             return 'Usuario o contraseña incorrectos'
     return redirect(url_for('index'))
@@ -53,64 +54,72 @@ def register():
         return redirect(url_for('index'))
     return render_template('register.html')
 
-@app.route('/home')
-def home():
-    if 'loggedin' in session:
-        if session['role'] == 0:
-            return render_template('home_A.html')
-        if session['role'] == 1:
-            return render_template('home_M.html')
-        if session['role'] == 2:
-            return render_template('home_S.html')
-        else:
-            return render_template('home.html')
+@app.route('/<string:role>/home')
+def home(role):
+    if 'loggedin' in session and session['role'] == role:
+        return render_template('home.html')
     return redirect(url_for('index'))
 
-@app.route('/admin/CRUD/usuarios')
-def admin_uCRUD():
-    return render_template('CRUD_usuarios.html')
+@app.route('/<string:role>/CRUD/<string:entity>', methods=['GET'])
+def crud(role, entity):
+    if role in ['admin', 'medico', 'secretaria'] and entity in ['Usuarios', 'Sintomas', 'Signos', 'Enfermedades', 'Pacientes', 'Pruebas', 'Citas']:
+        if entity == 'Usuarios':
+            cursor = mysql.connection.cursor()
+            cursor.execute('SELECT * FROM usuarios')
+            usuarios = cursor.fetchall()
+            print(usuarios)
+            return render_template(f'CRUD_{entity}.html',usuarios = usuarios, role = role)
 
-@app.route('/admin/CRUD/sintomas')
-def admin_sintCRUD():
-    return render_template('CRUD_sintomas.html')
+        return render_template(f'CRUD_{entity}.html')
+    else:
+        return "404 Not Found", 404
 
-@app.route('/admin/CRUD/signos')
-def admin_signCRUD():
-    return render_template('CRUD_signos.html')
+@app.route('/<string:rol>/CRUD/<string:entity>/agregar', methods=['POST'])
+def agregar_entidad(rol, entity):
+    if rol in ['admin', 'medico', 'secretaria'] and entity == 'Usuarios':
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        role = request.form['role']
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO usuarios (name, email, password, role) VALUES (%s, %s, %s, %s)', (name, email, password, role,))
+        mysql.connection.commit()
+        return redirect(request.referrer)
+    else:
+        return "404 Not Found", 404
 
-@app.route('/admin/CRUD/enfermedades')
-def admin_eCRUD():
-    return render_template('CRUD_enfermedades.html')
+@app.route('/<string:rol>/CRUD/<string:entity>/editar/<id>', methods=['POST'])
+def editar_entidad(rol, entity, id):
+    if rol in ['admin', 'medico', 'secretaria'] and entity == 'Usuarios':
+        name = request.form['name']
+        email = request.form['email']
+        role = request.form['role']
+        cursor = mysql.connection.cursor()
+        cursor.execute('UPDATE usuarios SET name = %s, email = %s, role = %s WHERE id = %s', (name, email, role, id))
+        mysql.connection.commit()
+        return redirect(request.referrer)
+    else:
+        return "404 Not Found", 404
 
-@app.route('/admin/CRUD/pacientes')
-def admin_pCRUD():
-    return render_template('CRUD_pacientes.html')
-
-@app.route('/admin/CRUD/pruebas')
-def admin_prCRUD():
-    return render_template('CRUD_pruebas.html')
-
-@app.route('/admin/CRUD/citas')
-def admin_cCRUD():
-    return render_template('CRUD_citas.html')
-
-@app.route('/medico/CRUD/pacientes')
-def med_pCRUD():
-    return render_template('CRUD_pacientes.html')
-
-@app.route('/medico/CRUD/citas')
-def med_cCRUD():
-    return render_template('CRUD_citas.html')
-
-@app.route('/secretaria/CRUD/pacientes')
-def sec_pCRUD():
-    return render_template('CRUD_pacientes.html')
-
-@app.route('/secretaria/CRUD/citas')
-def sec_cCRUD():
-    return render_template('CRUD_citas.html')
-
-
+@app.route('/<string:rol>/CRUD/<string:entity>/eliminar/<id>', methods=['POST'])
+def eliminar_entidad(rol, entity, id):
+    if rol in ['admin', 'medico', 'secretaria'] and entity == 'Usuarios':
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT role FROM usuarios WHERE id = %s', (id,))
+        current_role = cursor.fetchone()[0]
+        new_role = 3 if current_role == 0 else 0 if current_role == 3 else 4 if current_role == 1 else 1 if current_role == 4 else 5 if current_role == 2 else 2
+        cursor.execute('UPDATE usuarios SET role = %s WHERE id = %s', (new_role, id))
+        mysql.connection.commit()
+        return redirect(request.referrer)
+    else:
+        return "404 Not Found", 404
+    
+@app.route('/<string:role>/<string:action>')
+def action(role, action):
+    if role in ['admin', 'medico'] and action in ['Historial', 'Seguimiento_Diagnostico']:
+        return render_template(f'{action.lower()}.html')
+    else:
+        return "404 Not Found", 404
 
 if __name__ == '__main__':
     app.run(debug=True)
