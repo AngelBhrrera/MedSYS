@@ -52,10 +52,10 @@
       					<td>{{ usuario[2] }}</td>
       					<td>{{ usuario[3] }}</td>
       					<td>{{ usuario[4] }}</td>
-      					<td>{{ usuario[5] }}</td>
-      					<td>{{ usuario[6] }}</td>
       					<td>{{ usuario[7] }}</td>
       					<td>{{ usuario[8] }}</td>
+      					<td>{{ usuario[5] }}</td>
+      					<td>{{ usuario[6] }}</td>
       					<td>
 							<button class="btn btn-edit" data-id="{{ usuario }}">Editar</button>
 							<form method="post" action="/{{ role }}/CRUD/Pacientes/eliminar/{{ usuario[0] }}">
@@ -77,7 +77,7 @@
 			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		  </div>
 		  <div class="modal-body">
-			<form id="agregarPacienteForm" method="post" action="/{{ role }}/CRUD/Paciente/agregar">
+			<form id="agregarPacienteForm" method="post" action="/{{ role }}/CRUD/Pacientes/agregar">
 				<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
 				<input type="text" name="apellido" placeholder="Apellido" class="form-input" required>
 				<input type="date" name="fecha_n" placeholder="Fecha de Nacimiento" class="form-input" required>
@@ -100,7 +100,6 @@
 			</form>
 		  </div>
 		  <div class="modal-footer">
-			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
 			<button type="submit" form="agregarPacienteForm" class="btn btn-primary">Crear</button>
 		  </div>
 		</div>
@@ -112,11 +111,11 @@
 	  <div class="modal-dialog">
 		<div class="modal-content">
 		  <div class="modal-header">
-			<h5 class="modal-title" id="editarUsuarioModalLabel">Editar Paciente</h5>
+			<h5 class="modal-title" id="editarPacienteModalLabel">Editar Paciente</h5>
 			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		  </div>
 		  <div class="modal-body">
-			<form id="editarPacienteForm" method="post" action="/{{ role }}/CRUD/Paciente/editar/">
+			<form id="editarPacienteForm" method="post" action="/{{ role }}/CRUD/Pacientes/editar/">
 				<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
 				<input type="text" name="apellido" placeholder="Apellido" class="form-input" required>
 				<input type="date" name="fecha_n" placeholder="Fecha de Nacimiento" class="form-input" required>
@@ -139,8 +138,7 @@
 			</form>
 		  </div>
 		  <div class="modal-footer">
-			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-			<button type="submit" form="editarUsuarioForm" class="btn btn-primary">Editar</button>
+			<button type="submit" form="editarPacienteForm" class="btn btn-primary">Editar</button>
 		  </div>
 		</div>
 	  </div>
@@ -170,13 +168,13 @@
 			$('#editarPacienteForm input[name="nombre"]').val(dataArray[1]);
 			$('#editarPacienteForm input[name="apellido"]').val(dataArray[2]);
 			$('#editarPacienteForm input[name="fecha_n"]').val(date);
-			$('#editarPacienteForm input[name="estatura"]').val(dataArray[6]);
-			$('#editarPacienteForm input[name="edad"]').val(dataArray[7]);
+			$('#editarPacienteForm input[name="estatura"]').val(dataArray[7]);
+			$('#editarPacienteForm input[name="edad"]').val(dataArray[6]);
 			$('#editarPacienteForm input[name="peso"]').val(dataArray[8]);
 			$('#editarPacienteForm select[name="sexo"]').val(dataArray[9]);
 			$('#editarPacienteForm select[name="nacionalidad"]').val(dataArray[10]);
 
-			$('#editarPacienteForm').attr('action', '/{{ role }}/CRUD/Paciente/editar/' + dataArray[0]);
+			$('#editarPacienteForm').attr('action', '/{{ role }}/CRUD/Pacientes/editar/' + dataArray[0]);
 
 			$('#editarPacienteModal').modal('show');
 		} else {

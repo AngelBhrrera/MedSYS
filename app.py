@@ -41,19 +41,6 @@ def login():
             return 'Usuario o contraseña incorrectos'
     return redirect(url_for('index'))
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST' and 'name' in request.form and 'email' in request.form and 'password' in request.form and 'role' in request.form:
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
-        role = request.form['role']
-        cursor = mysql.connection.cursor()
-        cursor.execute('INSERT INTO usuarios (name, email, password, role) VALUES (%s, %s, %s, %s)', (name, email, password, role,))
-        mysql.connection.commit()
-        return redirect(url_for('index'))
-    return render_template('register.html')
-
 @app.route('/<string:role>/home')
 def home(role):
     if 'loggedin' in session and session['role'] == role:
@@ -73,21 +60,35 @@ def crud(role, entity):
             cursor.execute('SELECT * FROM pacientes')
             pacientes = cursor.fetchall()
             return render_template(f'CRUD_{entity}.html',pacientes = pacientes, role = role)
+        if entity == 'Pruebas':
+            cursor = mysql.connection.cursor()
+            cursor.execute('SELECT * FROM pruebas')
+            pruebas = cursor.fetchall()
+            return render_template(f'CRUD_{entity}.html', pruebas = pruebas, role = role)
         if entity == 'Enfermedades':
             cursor = mysql.connection.cursor()
-            cursor.execute('SELECT * FROM enfermedades')
+            cursor.execute('SELECT e.id_enfermedad, e.nombre, e.descripcion, e.id_prueba, p.nombre AS nombre_prueba FROM enfermedades e INNER JOIN pruebas p ON e.id_prueba = p.id_prueba')
             enfermedades = cursor.fetchall()
-            return render_template(f'CRUD_{entity}.html',enfermedades = enfermedades, role = role)
+            cursor2 = mysql.connection.cursor()
+            cursor2.execute('SELECT * FROM pruebas')
+            pruebas = cursor2.fetchall()
+            return render_template(f'CRUD_{entity}.html', enfermedades = enfermedades, pruebas = pruebas, role = role)
         if entity == 'Signos':
             cursor = mysql.connection.cursor()
-            cursor.execute('SELECT * FROM signos_sintomas WHERE tipo = 0')
+            cursor.execute('SELECT * FROM signos_sintomas WHERE tipo = 1')
             signos = cursor.fetchall()
-            return render_template(f'CRUD_{entity}.html',signos = signos, role = role)
+            cursor2 = mysql.connection.cursor()
+            cursor2.execute('SELECT * FROM enfermedades')
+            enfermedades = cursor2.fetchall()
+            return render_template(f'CRUD_{entity}.html',signos = signos, enfermedades = enfermedades, role = role)
         if entity == 'Sintomas':
             cursor = mysql.connection.cursor()
-            cursor.execute('SELECT * FROM signos_sintomas WHERE tipo = 1')
+            cursor.execute('SELECT * FROM signos_sintomas WHERE tipo = 2')
             sintomas = cursor.fetchall()
-            return render_template(f'CRUD_{entity}.html',sintomas = sintomas, role = role)
+            cursor2 = mysql.connection.cursor()
+            cursor2.execute('SELECT * FROM enfermedades')
+            enfermedades = cursor2.fetchall()
+            return render_template(f'CRUD_{entity}.html',sintomas = sintomas, enfermedades = enfermedades, role = role)
 
         return render_template(f'CRUD_{entity}.html')
     else:
@@ -95,7 +96,7 @@ def crud(role, entity):
 
 @app.route('/<string:rol>/CRUD/<string:entity>/agregar', methods=['POST'])
 def agregar_entidad(rol, entity):
-    if rol in ['admin', 'medico', 'secretaria'] and entity == 'Usuarios':
+    if rol in ['admin'] and entity == 'Usuarios':
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
@@ -117,6 +118,38 @@ def agregar_entidad(rol, entity):
         cursor.execute('INSERT INTO pacientes (nombre, apellido, fecha_nacimiento, estatura, edad, peso, sexo, nacionalidad) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', (nombre, apellido, fecha_n, estatura, edad, peso, sexo, nacionalidad,))
         mysql.connection.commit()
         return redirect(request.referrer)
+    if rol in ['admin', 'medico'] and entity == 'Pruebas':
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        tipo = request.form['tipo']
+        valores_referencia = request.form['valores_referencia']
+        resultado_optimo = request.form['resultado_optimo']
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO pruebas (nombre, descripcion, tipo, valores_referencia, resultado_optimo) VALUES (%s, %s, %s, %s, %s)', (nombre, descripcion, tipo, valores_referencia, resultado_optimo,))
+        mysql.connection.commit()
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico'] and entity == 'Enfermedades':
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        id_prueba = request.form['id_prueba']
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO enfermedades (nombre, descripcion, id_prueba) VALUES (%s, %s, %s)', (nombre, descripcion, id_prueba,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico'] and entity in ['Signos', 'Sintomas']:
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        frecuencia = request.form['frecuencia']
+        if(entity == 'Signos'):
+            tipo = 1;
+        else:
+            tipo = 2;
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO signos_sintomas (nombre, descripcion, frecuencia, tipo) VALUES (%s, %s, %s, %s)', (nombre, descripcion, frecuencia, tipo,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(request.referrer)
     else:
         return "404 Not Found", 404
 
@@ -129,6 +162,48 @@ def editar_entidad(rol, entity, id):
         cursor = mysql.connection.cursor()
         cursor.execute('UPDATE usuarios SET name = %s, email = %s, role = %s WHERE id = %s', (name, email, role, id))
         mysql.connection.commit()
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico', 'secretaria'] and entity == 'Pacientes':
+        nombre = request.form['nombre']
+        apellido = request.form['apellido']
+        fecha_n = request.form['fecha_n']
+        estatura = request.form['estatura']
+        edad = request.form['edad']
+        peso = request.form['peso']
+        sexo = request.form['sexo']
+        nacionalidad = request.form['nacionalidad']
+        cursor = mysql.connection.cursor()
+        cursor.execute('UPDATE pacientes SET nombre = %s, apellido = %s, fecha_nacimiento = %s, estatura = %s, edad = %s, peso = %s, sexo = %s, nacionalidad = %s WHERE id_paciente = %s',
+                  (nombre, apellido, fecha_n, estatura, edad, peso, sexo, nacionalidad, id))
+        mysql.connection.commit()
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico'] and entity == 'Pruebas':
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        tipo = request.form['tipo']
+        valores_referencia = request.form['valores_referencia']
+        resultado_optimo = request.form['resultado_optimo']
+        cursor = mysql.connection.cursor()
+        cursor.execute('UPDATE pruebas SET nombre = %s, descripcion = %s, tipo = %s, valores_referencia = %s, resultado_optimo = %s WHERE id_prueba = %s', (nombre, descripcion, tipo, valores_referencia, resultado_optimo, id,))
+        mysql.connection.commit()      
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico'] and entity == 'Enfermedades':
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        id_prueba = request.form['id_prueba']
+        cursor = mysql.connection.cursor()
+        cursor.execute('UPDATE enfermedades SET nombre = %s, descripcion = %s, id_prueba = %s WHERE id_enfermedad = %s', (nombre, descripcion, id_prueba, id,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico'] and (entity == 'Signos' or entity == 'Sintomas'):
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        frecuencia = request.form['frecuencia']        
+        cursor = mysql.connection.cursor()
+        cursor.execute('UPDATE signos_sintomas SET nombre = %s, descripcion = %s, frecuencia = %s, WHERE id_si = %s', (nombre, descripcion, frecuencia, id,))
+        mysql.connection.commit()
+        cursor.close()
         return redirect(request.referrer)
     else:
         return "404 Not Found", 404
@@ -143,9 +218,55 @@ def eliminar_entidad(rol, entity, id):
         cursor.execute('UPDATE usuarios SET role = %s WHERE id = %s', (new_role, id))
         mysql.connection.commit()
         return redirect(request.referrer)
+    if rol in ['admin', 'medico', 'secretaria'] and entity == 'Pacientes':
+        cursor = mysql.connection.cursor()
+        cursor.execute('DELETE FROM pacientes WHERE id_paciente = %s', (id,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico'] and entity == 'Pruebas':
+        cursor = mysql.connection.cursor()
+        cursor.execute('DELETE FROM pruebas WHERE id_prueba = %s', (id,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico'] and entity == 'Enfermedades':
+        cursor = mysql.connection.cursor()
+        cursor.execute('DELETE FROM enfermedades WHERE id_enfermedad = %s', (id,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(request.referrer)
+    if rol in ['admin', 'medico'] and (entity == 'Signos' or entity == 'Sintomas'):
+        cursor = mysql.connection.cursor()
+        cursor.execute('DELETE FROM signos_sintomas WHERE id_si = %s', (id,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(request.referrer)
     else:
         return "404 Not Found", 404
     
+    
+
+@app.route('/<string:rol>/Signos/relacionar', methods=['POST'])
+def relacionar_enfermedadSigno(rol):
+        id_enfermedad = request.form['enfermedad']
+        id_si = request.form['signo']
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO motor_inferencia (id_enfermedad, id_si) VALUES (%s, %s)', (id_enfermedad, id_si,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(request.referrer)
+
+@app.route('/<string:rol>/Sintomas/relacionar', methods=['POST'])
+def relacionar_enfermedadSintoma(rol):
+        id_enfermedad = request.form['enfermedad']
+        id_si = request.form['sintoma']
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO motor_inferencia (id_enfermedad, id_si) VALUES (%s, %s)', (id_enfermedad, id_si,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(request.referrer)
+        
 @app.route('/<string:role>/<string:action>')
 def action(role, action):
     if role in ['admin', 'medico'] and action in ['Historial', 'Seguimiento_Diagnostico']:

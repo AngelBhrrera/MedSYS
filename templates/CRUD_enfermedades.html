@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRUD de Usuarios</title>
+<title>Enfermedades</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <style>
   body { font-family: Arial, sans-serif; }
   .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
@@ -21,37 +23,120 @@
 <body>
 <!-- Barra superior -->
     {% include 'topbar.html' %}
-    
-    <!-- Contenido principal -->
-    <div class="container">
+<!-- Contenido principal -->
+<div class="container">
         <!-- Barra lateral -->
         {% include 'sidebar.html' %}
 
-        <!-- Contenido principal -->
+				<!-- Contenido principal -->
 		<div class="main-content">
-  			<h1>Enfermedades</h1>
-  			<button class="btn btn-add">Agregar Enfermedad</button>
-  			<table>
-    				<tr>
-      					<th>Nombre</th>
-      					<th>Descripcion</th>
-      					<th>Prueba</th>
-      					<th>Acciones</th>
-    				</tr>
-    	<!-- Los registros de usuarios irían aquí -->
-    				<tr>
-      					<td>Covid</td>
-      					<td>Grave</td>
-      					<td>PCR</td>
-      					<td>
-        					<button class="btn btn-edit">Editar</button>
-        					<button class="btn btn-delete">Eliminar</button>
-      					</td>
-    				</tr>
-    	<!-- Más registros -->
-  			</table>
+			<h1>Enfermedades</h1>
+			<button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#agregarEnfermedadModal">Agregar Enfermedad</button>
+			<table>
+				<tr>
+					<th>Nombre</th>
+					<th>Descripción</th>
+					<th>Prueba Asociada</th>
+					<th>Acciones</th>
+				</tr>
+				<!-- Los registros de enfermedades irían aquí -->
+				{% for enfermedad in enfermedades %}
+				<tr>
+					<td>{{ enfermedad[1] }}</td>
+					<td>{{ enfermedad[2] }}</td>
+					<td>{{ enfermedad[4] }}</td>
+					<td>
+						<button class="btn btn-edit" data-id="{{ enfermedad[0] }}"  data-id_prueba="{{ enfermedad[3] }}" data-bs-toggle="modal" data-bs-target="#editarEnfermedadModal">Editar</button>
+						<form method="post" action="/{{ role }}/CRUD/enfermedades/eliminar/{{ enfermedad[0] }}">
+							<input type="submit" class="btn btn-delete" value="Eliminar">
+						</form>
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+
+
+	<!-- Modal para agregar enfermedad -->
+	<div class="modal fade" id="agregarEnfermedadModal" tabindex="-1" aria-labelledby="agregarEnfermedadModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="agregarEnfermedadModalLabel">Agregar Enfermedad</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="agregarEnfermedadForm" method="post" action="/{{ role }}/CRUD/Enfermedades/agregar">
+						<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+						<input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
+						<select name="id_prueba" class="form-input" required>
+							<option value="" disabled selected>Seleccionar Prueba</option>
+							{% for prueba in pruebas %}
+							<option value="{{ prueba[0] }}">{{ prueba[1] }}</option>
+							{% endfor %}
+						</select>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" form="agregarEnfermedadForm" class="btn btn-primary">Agregar</button>
+				</div>
+			</div>
 		</div>
 	</div>
 
+	<!-- Modal para editar enfermedad -->
+	<div class="modal fade" id="editarEnfermedadModal" tabindex="-1" aria-labelledby="editarEnfermedadModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="editarEnfermedadModalLabel">Editar Enfermedad</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="editarEnfermedadForm" method="post" action="/{{ role }}/CRUD/Enfermedades/editar">
+						<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+						<input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
+						<select name="id_prueba" class="form-input" required>
+							<option value="" disabled selected>Seleccionar Prueba</option>
+							{% for prueba in pruebas %}
+							<option value="{{ prueba[0] }}">{{ prueba[1] }}</option>
+							{% endfor %}
+						</select>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" form="editarEnfermedadForm" class="btn btn-primary">Editar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
 </body>
+
+<script>
+	$('.btn-add').click(function() {
+		$('#agregarEnfermedadModal').modal('show');
+	});
+
+    // Mostrar modal para editar enfermedad
+    $('.btn-edit').click(function() {
+        var enfermedadId = $(this).data('id');
+        var nombre = $(this).closest('tr').find('td:eq(0)').text();
+        var descripcion = $(this).closest('tr').find('td:eq(1)').text();
+        var idPrueba = $(this).data('id_prueba');
+		
+        $('#editarEnfermedadForm input[name="nombre"]').val(nombre);
+        $('#editarEnfermedadForm input[name="descripcion"]').val(descripcion);
+        $('#editarEnfermedadForm select[name="id_prueba"]').val(idPrueba);
+
+        $('#editarEnfermedadForm').attr('action', '/{{ role }}/CRUD/enfermedades/editar/' + enfermedadId);
+
+        $('#editarEnfermedadModal').modal('show');
+    });
+
+
+</script>
+
 </html>

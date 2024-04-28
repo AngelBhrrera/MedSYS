@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRUD de Usuarios</title>
+<title>Sintomas</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <style>
   body { font-family: Arial, sans-serif; }
   .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
@@ -30,31 +32,136 @@
         <!-- Contenido principal -->
 		<div class="main-content">
   			<h1>Sintomas</h1>
-  			<button class="btn btn-add">Agregar Sintoma</button>
-			<button class="btn btn-add">Relacionar con Enfermedad</button>
-  			<table>
-    				<tr>
-      					<th>Nombre</th>
-      					<th>Frecuencia</th>
-      					<th>Duracion</th>
-      					<th>Descripcion</th>
-      					<th>Acciones</th>
-    				</tr>
-    	<!-- Los registros de usuarios irían aquí -->
-    				<tr>
-      					<td>aaa</td>
-      					<td>bbb</td>
-      					<td>ccc</td>
-      					<td>ddd</td>
-      					<td>
-        					<button class="btn btn-edit">Editar</button>
-        					<button class="btn btn-delete">Eliminar</button>
-      					</td>
-    				</tr>
-    	<!-- Más registros -->
-  			</table>
+  			<button class="btn btn-add">Agregar sintoma</button>
+  			<button class="btn btn-relate">Relacionar con Enfermedad</button>
+  			 <table>
+				<tr>
+					<th>Nombre</th>
+					<th>Descripción</th>
+					<th>Frecuencia</th>
+					<th>Acciones</th>
+				</tr>
+				<!-- Los registros de síntomas irían aquí -->
+				{% for sintoma in sintomas %}
+				<tr>
+					<td>{{ sintoma[1] }}</td>
+					<td>{{ sintoma[2] }}</td>
+					<td>{{ sintoma[4] }}</td>
+					<td>
+						<button class="btn btn-edit" data-id="{{ sintomas[0] }}" data-bs-toggle="modal" data-bs-target="#editarSintomasModal">Editar</button>
+						<form method="post" action="/{{ role }}/CRUD/Sintomas/eliminar/{{ sintoma[0] }}">
+							<input type="submit" class="btn btn-delete" value="Eliminar">
+						</form>
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+	
+	<!-- Modal para agregar síntoma -->
+	<div class="modal fade" id="agregarSintomasModal" tabindex="-1" aria-labelledby="agregarSintomasModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="agregarSintomasModalLabel">Agregar Sintoma</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="agregarSintomasForm" method="post" action="/{{ role }}/CRUD/Sintomas/agregar">
+						<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+						<input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
+						<input type="number" name="frecuencia" placeholder="Frecuencia" class="form-input" required>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" form="agregarSintomasForm" class="btn btn-primary">Agregar</button>
+				</div>
+			</div>
 		</div>
 	</div>
 
+	<!-- Modal para editar  síntoma -->
+	<div class="modal fade" id="editarSintomasModal" tabindex="-1" aria-labelledby="editarSintomasModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="editarSintomasModalLabel">Editar Sintoma</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="editarSintomasForm" method="post" action="/{{ role }}/CRUD/Sintomas/editar">
+						<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+						<input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
+						<input type="number" name="frecuencia" placeholder="Frecuencia" class="form-input" required>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" form="editarSintomasForm" class="btn btn-primary">Editar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+		<!-- Modal para relacionar sintoma con enfermedad -->
+		<div class="modal fade" id="relacionarModal" tabindex="-1" aria-labelledby="relacionarModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="relacionarModalLabel">Relacionar sintoma con Enfermedad</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="relacionarForm" method="post" action="/{{ role }}/Sintomas/relacionar">
+							<select name="sintoma" class="form-input" required>
+								<option value="" disabled selected>Seleccionar sintoma</option>
+								<!-- Aquí puedes incluir opciones para los sintomas -->
+								{% for sintoma in sintomas %}
+									<option value="{{ sintoma[0] }}">{{ sintoma[1] }}</option>
+								{% endfor %}
+							</select>
+							<select name="enfermedad" class="form-input" required>
+								<option value="" disabled selected>Seleccionar Enfermedad</option>
+								<!-- Aquí puedes incluir opciones para las enfermedades -->
+								{% for enfermedad in enfermedades %}
+								<option value="{{ enfermedad[0] }}">{{ enfermedad[1] }}</option>
+								{% endfor %}
+							</select>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" form="relacionarForm" class="btn btn-primary">Relacionar</button>
+					</div>
+				</div>
+			</div>
+		</div>
 </body>
+
+<script>
+$('.btn-relate').click(function() {
+    $('#relacionarModal').modal('show');
+});
+
+$('.btn-add').click(function() {
+    $('#agregarSintomasModal').modal('show');
+});
+
+// Mostrar modal para editar síntoma
+$('.btn-edit').click(function() {
+    var SintomaId = $(this).data('id');
+    var nombre = $(this).closest('tr').find('td:eq(0)').text();
+    var descripcion = $(this).closest('tr').find('td:eq(1)').text();
+    var frecuencia = $(this).closest('tr').find('td:eq(2)').text();
+
+    $('#editarSintomasForm input[name="nombre"]').val(nombre);
+    $('#editarSintomasForm input[name="descripcion"]').val(descripcion);
+    $('#editarSintomasForm input[name="frecuencia"]').val(frecuencia);
+
+    $('#editarSintomasForm').attr('action', '/{{ role }}/CRUD/Sintomas/editar/' + SintomaId);
+
+    $('#editarSintomasModal').modal('show');
+});
+</script>
+
 </html>
+

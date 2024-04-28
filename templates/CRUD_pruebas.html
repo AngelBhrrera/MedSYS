@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRUD de Usuarios</title>
+<title>Pruebas</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <style>
   body { font-family: Arial, sans-serif; }
   .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
@@ -29,33 +31,114 @@
 
         <!-- Contenido principal -->
 		<div class="main-content">
-  			<h1>Pruebas</h1>
-  			<button class="btn btn-add">Agregar Prueba</button>
-  			<table>
-    				<tr>
-      					<th>Nombre</th>
-					<th>Descripcion</th>
-      					<th>Tipo</th>
-      					<th>Valores de referencia</th>
-      					<th>Resultados optimos</th>
-      					<th>Acciones</th>
-    				</tr>
-    	<!-- Los registros de usuarios irían aquí -->
-    				<tr>
-      					<td>PCR</td>
-      					<td>La Reacción en Cadena de la Polimerasa (PCR) es una técnica de biología molecular utilizada para amplificar fragmentos de ADN.</td>
-      					<td>Biología Molecular</td>
-      					<td>Positivo, Negativo</td>
-      					<td>Negativo</td>
-      					<td>
-        					<button class="btn btn-edit">Editar</button>
-        					<button class="btn btn-delete">Eliminar</button>
-      					</td>
-    				</tr>
-    	<!-- Más registros -->
-  			</table>
+			<h1>Pruebas</h1>
+			<button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#agregarPruebaModal">Agregar Prueba</button>
+			<table>
+				<tr>
+					<th>Nombre</th>
+					<th>Descripción</th>
+					<th>Tipo</th>
+					<th>Valores de Referencia</th>
+					<th>Resultado Óptimo</th>
+					<th>Acciones</th>
+				</tr>
+				<!-- Los registros de pruebas irían aquí -->
+				{% for prueba in pruebas %}
+				<tr>
+					<td>{{ prueba[1] }}</td>
+					<td>{{ prueba[2] }}</td>
+					<td>{{ prueba[3] }}</td>
+					<td>{{ prueba[4] }}</td>
+					<td>{{ prueba[5] }}</td>
+					<td>
+						<button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editarPruebaModal" data-id="{{ prueba[0] }}" data-nombre="{{ prueba[1] }}" data-descripcion="{{ prueba[2] }}" data-tipo="{{ prueba[3] }}" data-valores_referencia="{{ prueba[4] }}" data-resultado_optimo="{{ prueba[5] }}">Editar</button>
+						<form method="post" action="/CRUD/pruebas/eliminar/{{ prueba[0] }}">
+							<input type="submit" class="btn btn-delete" value="Eliminar">
+						</form>
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+	
+	<!-- Modal para agregar prueba -->
+	<div class="modal fade" id="agregarPruebaModal" tabindex="-1" aria-labelledby="agregarPruebaModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="agregarPruebaModalLabel">Agregar Prueba</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			<form id="agregarPruebaForm" method="post" action="/{{ role }}/CRUD/Pruebas/agregar">
+			  <input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+			  <input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
+			  <input type="text" name="tipo" placeholder="Tipo" class="form-input" required>
+			  <input type="text" name="valores_referencia" placeholder="Valores de Referencia" class="form-input" required>
+			  <input type="text" name="resultado_optimo" placeholder="Resultado Óptimo" class="form-input" required>
+			</form>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			<button type="submit" form="agregarPruebaForm" class="btn btn-primary">Agregar</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+
+	<!-- Modal para editar prueba -->
+	<div class="modal fade" id="editarPruebaModal" tabindex="-1" aria-labelledby="editarPruebaModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="editarPruebaModalLabel">Editar Prueba</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="editarPruebaForm" method="post" action="/{{ role }}/CRUD/Pruebas/editar/>
+						<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+						<input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
+						<input type="text" name="tipo" placeholder="Tipo" class="form-input" required>
+						<input type="text" name="valores_referencia" placeholder="Valores de Referencia" class="form-input" required>
+						<input type="text" name="resultado_optimo" placeholder="Resultado Óptimo" class="form-input" required>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" form="editarPruebaForm" class="btn btn-primary">Editar</button>
+				</div>
+			</div>
 		</div>
 	</div>
 
+
 </body>
+
+<script>
+
+	$('.btn-add').click(function() {
+		$('#agregarPruebaModal').modal('show');
+	});
+
+    $('.btn-edit').click(function() {
+        var pruebaId = $(this).data('id');
+        var pruebaNombre = $(this).data('nombre');
+        var pruebaDescripcion = $(this).data('descripcion');
+        var pruebaTipo = $(this).data('tipo');
+        var pruebaValoresRef = $(this).data('valores_referencia');
+        var pruebaResultadoOptimo = $(this).data('resultado_optimo');
+
+        $('#editarPruebaModal input[name="nombre"]').val(pruebaNombre);
+        $('#editarPruebaModal input[name="descripcion"]').val(pruebaDescripcion);
+        $('#editarPruebaModal input[name="tipo"]').val(pruebaTipo);
+        $('#editarPruebaModal input[name="valores_referencia"]').val(pruebaValoresRef);
+        $('#editarPruebaModal input[name="resultado_optimo"]').val(pruebaResultadoOptimo);
+
+        $('#editarPruebaModal form').attr('action', '/CRUD/pruebas/editar/' + pruebaId);
+
+        $('#editarPruebaModal').modal('show');
+    });
+</script>
+
 </html>

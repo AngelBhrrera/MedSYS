@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRUD de Usuarios</title>
+<title>Signos</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <style>
   body { font-family: Arial, sans-serif; }
   .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
@@ -31,30 +33,132 @@
 		<div class="main-content">
   			<h1>Signos</h1>
   			<button class="btn btn-add">Agregar Signo</button>
-  			<button class="btn btn-add">Relacionar con Enfermedad</button>
-  			<table>
-    				<tr>
-      					<th>Nombre</th>
-      					<th>Frecuencia</th>
-      					<th>Duracion</th>
-      					<th>Descripcion</th>
-      					<th>Acciones</th>
-    				</tr>
-    	<!-- Los registros de usuarios irían aquí -->
-    				<tr>
-      					<td>aaa</td>
-      					<td>bbb</td>
-      					<td>ccc</td>
-      					<td>ddd</td>
-      					<td>
-        					<button class="btn btn-edit">Editar</button>
-        					<button class="btn btn-delete">Eliminar</button>
-      					</td>
-    				</tr>
-    	<!-- Más registros -->
-  			</table>
+  			<button class="btn btn-relate">Relacionar con Enfermedad</button>
+  			 <table>
+				<tr>
+					<th>Nombre</th>
+					<th>Descripción</th>
+					<th>Frecuencia</th>
+					<th>Acciones</th>
+				</tr>
+				<!-- Los registros de signos y síntomas irían aquí -->
+				{% for signo in signos %}
+				<tr>
+					<td>{{ signo[1] }}</td>
+					<td>{{ signo[2] }}</td>
+					<td>{{ signo[4] }}</td>
+					<td>
+						<button class="btn btn-edit" data-id="{{ signos[0] }}" data-bs-toggle="modal" data-bs-target="#editarSignosModal">Editar</button>
+						<form method="post" action="/{{ role }}/CRUD/Signos/eliminar/{{ signo[0] }}">
+							<input type="submit" class="btn btn-delete" value="Eliminar">
+						</form>
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+	
+	<!-- Modal para agregar signo o síntoma -->
+	<div class="modal fade" id="agregarSignosModal" tabindex="-1" aria-labelledby="agregarSignosModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="agregarSignosModalLabel">Agregar Signo</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="agregarSignosForm" method="post" action="/{{ role }}/CRUD/Signos/agregar">
+						<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+						<input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
+						<input type="number" name="frecuencia" placeholder="Frecuencia" class="form-input" required>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" form="agregarSignosForm" class="btn btn-primary">Agregar</button>
+				</div>
+			</div>
 		</div>
 	</div>
 
+	<!-- Modal para editar signo o síntoma -->
+	<div class="modal fade" id="editarSignosModal" tabindex="-1" aria-labelledby="editarSignosModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="editarSignosModalLabel">Editar Signo</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="editarSignosForm" method="post" action="/{{ role }}/CRUD/Signos/editar">
+						<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
+						<input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
+						<input type="number" name="frecuencia" placeholder="Frecuencia" class="form-input" required>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" form="editarSignosForm" class="btn btn-primary">Editar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para relacionar signo con enfermedad -->
+	<div class="modal fade" id="relacionarModal" tabindex="-1" aria-labelledby="relacionarModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="relacionarModalLabel">Relacionar Signo con Enfermedad</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="relacionarForm" method="post" action="/{{ role }}/Signos/relacionar">
+						<select name="signo" class="form-input" required>
+							<option value="" disabled selected>Seleccionar Signo</option>
+							{% for signo in signos %}
+								<option value="{{ signo[0] }}">{{ signo[1] }}</option>
+							{% endfor %}
+						</select>
+						<select name="enfermedad" class="form-input" required>
+							<option value="" disabled selected>Seleccionar Enfermedad</option>
+							{% for enfermedad in enfermedades %}
+							<option value="{{ enfermedad[0] }}">{{ enfermedad[1] }}</option>
+							{% endfor %}
+						</select>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" form="relacionarForm" class="btn btn-primary">Relacionar</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
+
+<script>
+$('.btn-relate').click(function() {
+    $('#relacionarModal').modal('show');
+});
+
+$('.btn-add').click(function() {
+    $('#agregarSignosModal').modal('show');
+});
+
+// Mostrar modal para editar signo o síntoma
+$('.btn-edit').click(function() {
+    var signoSintomaId = $(this).data('id');
+    var nombre = $(this).closest('tr').find('td:eq(0)').text();
+    var descripcion = $(this).closest('tr').find('td:eq(1)').text();
+    var frecuencia = $(this).closest('tr').find('td:eq(2)').text();
+
+    $('#editarSignosForm input[name="nombre"]').val(nombre);
+    $('#editarSignosForm input[name="descripcion"]').val(descripcion);
+    $('#editarSignosForm input[name="frecuencia"]').val(frecuencia);
+
+    $('#editarSignosForm').attr('action', '/{{ role }}/CRUD/Signos/editar/' + signoSintomaId);
+
+    $('#editarSignosModal').modal('show');
+});
+</script>
+
 </html>
