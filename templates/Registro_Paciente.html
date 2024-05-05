@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Pacientes</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<style>
+  body { font-family: Arial, sans-serif; }
+  .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
+  .main-content { margin-left: 200px; padding: 20px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background-color: #16c2d5; color: white; }
+  .btn { padding: 5px 10px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+  .btn-edit { background-color: #FFC107; }
+  .btn-delete { background-color: #F44336; }
+  .btn-add { background-color: #16c2d5; color: white; padding: 10px 20px; }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<!-- Barra superior -->
+    {% include 'topbar.html' %}
+    
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Barra lateral -->
+        {% include 'sidebar.html' %}
+
+        <!-- Contenido principal -->
+		<div class="main-content" style="width: 50%; margin: auto; padding: 20px; border-radius: 10px; margin-top: -20px;">
+			<h1 style="text-align: center;">Registrar Paciente</h1>
+			<form id="agregarPacienteForm" method="post" action="CRUD/Pacientes/agregar" style="display: flex; flex-direction: column;">
+				<input type="text" name="nombre" placeholder="Nombre" class="form-input" required style="margin-bottom: 10px;">
+				<input type="text" name="apellido" placeholder="Apellido" class="form-input" required style="margin-bottom: 10px;">
+				<input type="date" name="fecha_n" placeholder="Fecha de Nacimiento" class="form-input" required style="margin-bottom: 10px;">
+				<input type="number" step="0.01" name="estatura" placeholder="Estatura" class="form-input" required style="margin-bottom: 10px;">
+				<input type="number" name="edad" placeholder="Edad" class="form-input" required style="margin-bottom: 10px;">
+				<input type="number" step="0.01" name="peso" placeholder="Peso" class="form-input" required style="margin-bottom: 10px;">
+				<select name="sexo" class="form-input" required style="margin-bottom: 10px;">
+					<option value="" disabled selected>Sexo</option>
+					<option value="H">Hombre</option>
+					<option value="M">Mujer</option>
+					<option value="N">No definido</option>
+				</select>
+				<select name="nacionalidad" class="form-input" required style="margin-bottom: 10px;">
+					<option value="" disabled selected>Nacionalidad del paciente</option>
+					<option value="US">🇺🇸 Estados Unidos</option>
+					<option value="MX">🇲🇽 México</option>
+					<option value="ES">🇪🇸 España</option>
+					<option value="JP">🇯🇵 Japón</option>
+				</select>
+				<button type="submit" form="agregarPacienteForm" class="btn btn-add" style="cursor: pointer; padding: 10px; background-color: #007BFF; color: white; border: none; border-radius: 5px;">Crear</button>
+			</form>
+		</div>
+	</div>
+
+</body>
+</html>

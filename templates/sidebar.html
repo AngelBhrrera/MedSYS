@@ -10,14 +10,14 @@
    <div class="sidebar">
     <h3>Menu</h3>
     {% set options = {
-		'admin': ['Usuarios', 'Enfermedades', 'Sintomas', 'Signos', 'Historial', 'Seguimiento_Diagnostico', 'Pruebas', 'Pacientes', 'Citas'],
-		'medico': ['Pacientes', 'Citas', 'Historial', 'Seguimiento_Diagnostico'],
-		'secretaria': ['Pacientes', 'Citas']
+		'admin': ['Usuarios', 'Enfermedades', 'Sintomas', 'Signos', 'Historial', 'Seguimiento_Diagnostico', 'Pruebas', 'Pacientes'],
+		'medico': ['Registro_Paciente', 'Citas', 'Ver_Citas', 'Consultas'],
+		'secretaria': ['Registro_Paciente', 'Citas', 'Ver_Citas']
 	} %}
 
 	<ul>
 		{% for option in options[session['role']] %}
-			{% if option in ['Historial', 'Seguimiento_Diagnostico'] %}
+			{% if option in ['Historial', 'Seguimiento_Diagnostico', 'Registro_Paciente', 'Citas','Ver_Citas'] %}
 				<li><a href="/{{ session['role'] }}/{{ option }}">{{ option }}</a></li>
 			{% else %}
 				<li><a href="/{{ session['role'] }}/CRUD/{{ option }}">{{ option }}</a></li>

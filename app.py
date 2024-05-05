@@ -44,7 +44,12 @@ def login():
 @app.route('/<string:role>/home')
 def home(role):
     if 'loggedin' in session and session['role'] == role:
-        return render_template('home.html')
+        if role == 'admin':    
+            return render_template('home.html')
+        elif role in ['medico', 'secretaria']:
+            return render_template('home.html')
+        else:
+            return "404 Not Found", 404
     return redirect(url_for('index'))
 
 @app.route('/<string:role>/CRUD/<string:entity>', methods=['GET'])
@@ -117,7 +122,10 @@ def agregar_entidad(rol, entity):
         cursor = mysql.connection.cursor()
         cursor.execute('INSERT INTO pacientes (nombre, apellido, fecha_nacimiento, estatura, edad, peso, sexo, nacionalidad) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', (nombre, apellido, fecha_n, estatura, edad, peso, sexo, nacionalidad,))
         mysql.connection.commit()
-        return redirect(request.referrer)
+        if rol == 'admin':    
+            return redirect(request.referrer)
+        else:
+            return redirect(url_for('action', role=session["role"]), action="Ver_Citas")
     if rol in ['admin', 'medico'] and entity == 'Pruebas':
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
@@ -266,11 +274,44 @@ def relacionar_enfermedadSintoma(rol):
         mysql.connection.commit()
         cursor.close()
         return redirect(request.referrer)
-        
+    
+    
+@app.route('/<string:role>/<string:action>/<string:idp>')
+def historial(role, action, idp):
+    if role in ['medico'] and action in ['Historial']:
+       cursor = mysql.connection.cursor()
+       cursor.execute('SELECT * FROM consultas WHERE id_paciente = ?', idp)
+       historial = cursor.fetchall()
+       return render_template(f'{action.lower()}.html',  historial = historial, role = role)
+    elif role in ['medico'] and action in ['Consulta']:
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM signos_sintomas WHERE tipo = 1')
+        signos = cursor.fetchall()
+        cursor2 = mysql.connection.cursor()
+        cursor2.execute('SELECT * FROM signos_sintomas WHERE tipo = 2')
+        sintomas = cursor.fetchall()
+        return render_template(f'{action.lower()}.html', role = role, signos = signos, sintomas = sintomas)
+    else:
+       return "404 Not Found", 404
+   
+    
 @app.route('/<string:role>/<string:action>')
 def action(role, action):
-    if role in ['admin', 'medico'] and action in ['Historial', 'Seguimiento_Diagnostico']:
+    if role in ['medico','secretaria'] and action in ['Registro_Paciente', 'Seguimiento_Diagnostico']:
         return render_template(f'{action.lower()}.html')
+    elif role  in ['medico','secretaria'] and action in ['Ver_Citas']:
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM citas')
+        citas = cursor.fetchall()
+        return render_template(f'{action.lower()}.html', citas = citas, role = role)
+    elif role  in ['medico','secretaria'] and action in ['Citas']:
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM usuarios u WHERE u.role = 1')
+        medicos = cursor.fetchall()
+        cursor2 = mysql.connection.cursor()
+        cursor2.execute('SELECT * FROM pacientes')
+        pacientes = cursor2.fetchall()
+        return render_template(f'{action.lower()}.html', pacientes = pacientes, medicos = medicos, role = role)
     else:
         return "404 Not Found", 404
 

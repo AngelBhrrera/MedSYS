@@ -10,7 +10,9 @@
     <div class="topbar">
         <!-- Imagen de perfil -->
         <div class="profile-image">
-            <a href="placeholder.php"><img src="{{ url_for('static', filename='img/imagen_perfil.jpg') }}" alt="Imagen de perfil" width="100" height="100"></a>
+            <a href="{{ url_for('home', role=session['role']) }}">
+				<img src="{{ url_for('static', filename='img/imagen_perfil.jpg') }}" alt="Imagen de perfil" width="100" height="100">
+			</a>
         </div>
         
         <!-- Botón de ajustes -->
