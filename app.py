@@ -34,9 +34,10 @@ def login():
         user = cursor.fetchone()
         if user:
             session['loggedin'] = True
+            session['id'] = user[0]
             session['name'] = user[1]
             session['role'] = role_map[user[3]]
-            return redirect(url_for('home', role=session["role"]))
+            return redirect(url_for('home', role=session["role"],))
         else:
             return 'Usuario o contraseña incorrectos'
     return redirect(url_for('index'))
@@ -47,7 +48,11 @@ def home(role):
         if role == 'admin':    
             return render_template('home.html')
         elif role in ['medico', 'secretaria']:
-            return render_template('home.html')
+            idu = session['id']
+            cursor = mysql.connection.cursor()
+            cursor.execute('SELECT * FROM detalle_citas WHERE id_medico = %s AND estado = 1', (idu, ))
+            citas = cursor.fetchall()
+            return render_template('home.html', citas=citas)
         else:
             return "404 Not Found", 404
     return redirect(url_for('index'))
@@ -122,10 +127,7 @@ def agregar_entidad(rol, entity):
         cursor = mysql.connection.cursor()
         cursor.execute('INSERT INTO pacientes (nombre, apellido, fecha_nacimiento, estatura, edad, peso, sexo, nacionalidad) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', (nombre, apellido, fecha_n, estatura, edad, peso, sexo, nacionalidad,))
         mysql.connection.commit()
-        if rol == 'admin':    
-            return redirect(request.referrer)
-        else:
-            return redirect(url_for('action', role=session["role"]), action="Ver_Citas")
+        return redirect(request.referrer)
     if rol in ['admin', 'medico'] and entity == 'Pruebas':
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
@@ -158,6 +160,17 @@ def agregar_entidad(rol, entity):
         mysql.connection.commit()
         cursor.close()
         return redirect(request.referrer)
+    if rol in ['secretaria', 'medico'] and entity == 'Citas':
+        idm = request.form['id_medico']
+        idp = request.form['id_paciente']
+        fecha = request.form['fecha']  
+        hora = request.form['hora']  
+        observaciones = request.form['observaciones']  
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO citas (id_medico, id_paciente, fecha, hora, observaciones) VALUES (%s, %s, %s, %s, %s)', (idm, idp, fecha, hora, observaciones,))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(url_for('home', role=session["role"]))
     else:
         return "404 Not Found", 404
 
@@ -276,11 +289,17 @@ def relacionar_enfermedadSintoma(rol):
         return redirect(request.referrer)
     
     
-@app.route('/<string:role>/<string:action>/<string:idp>')
+@app.route('/<string:role>/<string:action>/<string:idp>',  methods=['GET'])
 def historial(role, action, idp):
     if role in ['medico'] and action in ['Historial']:
        cursor = mysql.connection.cursor()
-       cursor.execute('SELECT * FROM consultas WHERE id_paciente = ?', idp)
+       cursor.execute("""SELECT ci.fecha AS citas, p.nombre AS paciente, p.apellido, e.nombre AS enfermedad, co.resultado_prueba AS pruebas, co.id_consulta
+            FROM consultas co
+            INNER JOIN citas ci ON co.id_cita = ci.id_cita
+            INNER JOIN pacientes p ON co.id_paciente = p.id_paciente
+            INNER JOIN enfermedades e ON co.enfermedad_diagnosticada = e.id_enfermedad
+            WHERE co.id_paciente = %s
+            """, (idp,))
        historial = cursor.fetchall()
        return render_template(f'{action.lower()}.html',  historial = historial, role = role)
     elif role in ['medico'] and action in ['Consulta']:
@@ -311,7 +330,11 @@ def action(role, action):
         cursor2 = mysql.connection.cursor()
         cursor2.execute('SELECT * FROM pacientes')
         pacientes = cursor2.fetchall()
-        return render_template(f'{action.lower()}.html', pacientes = pacientes, medicos = medicos, role = role)
+        cursor3 = mysql.connection.cursor()
+        cursor3.execute('SELECT * FROM detalle_citas')
+        citas = cursor3.fetchall()
+        print(citas)
+        return render_template(f'{action.lower()}.html', pacientes = pacientes, medicos = medicos, citas=citas, role = role)
     else:
         return "404 Not Found", 404
 

@@ -5,16 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
 	<style>
-	  body { font-family: Arial, sans-serif; }
-	  .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
-	  .main-content { margin-left: 200px; padding: 20px; }
-	  table { width: 100%; border-collapse: collapse; }
-	  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-	  th { background-color: #16c2d5; color: white; }
-	  .btn { padding: 5px 10px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
-	  .btn-edit { background-color: #FFC107; }
-	  .btn-delete { background-color: #F44336; }
-	  .btn-add { background-color: #16c2d5; color: white; padding: 10px 20px; }
+ body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f8fa;
+        }
+        .secondtainer {
+            max-width: 800px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-right: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1da1f2;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+		.citas {
+			width: 100%; /* Ajusta esto al ancho que desees para el recuadro */
+			overflow-x: auto; /* Permite el desplazamiento horizontal */
+			white-space: nowrap; /* Evita que los elementos se envuelvan en líneas nuevas */
+		}
+
+		.ag-format-container {
+			display: inline-block; /* Hace que cada contenedor de cita sea en línea y bloque */
+		}
 	</style>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
@@ -30,42 +63,43 @@
         <!-- Contenido principal -->
         <div class="main-content">
             <!-- Mensaje de bienvenida -->
-            <h1>Bienvenido, {{ session['name'] }}</h1>
+            <h1>Bienvenido/a, {{ session['name'] }}</h1>
 
             <!-- Próximas citas -->
             <h2>Sus próximas citas:</h2>
             <div class="citas">
-                {% if citas %}
-                    {% for cita in citas %}
-                        <div class="ag-format-container">
-                            <div class="ag-courses_box">
-                                <div class="ag-courses_item">
-                                    <a href="#" class="ag-courses-item_link">
-                                    <div class="ag-courses-item_bg"></div>
-                            
-                                    <div class="ag-courses-item_title">  
-                                        {{ cita[5] }}</p>
-                                    </div>
-                            
-                                    <div class="ag-courses-item_date-box">
-                                        Fecha:
-                                        <span class="ag-courses-item_date">    
-                                            {{ cita[6] }}
-                                        </span>
-                                        Hora:
-                                        <span class="ag-courses-item_date">    
-                                            {{ cita[4] }}
-                                        </span>
-                                    </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>Usted no tiene citas</p>
-                {% endif %}
-            </div>
+				{% if citas %}
+					{% for cita in citas %}
+						<div class="ag-format-container">
+							<div class="ag-courses_box">
+								<div class="ag-courses_item">
+									<a href="#" class="ag-courses-item_link">
+									<div class="ag-courses-item_bg"></div>
+
+									<div class="ag-courses-item_title">  
+										Cita a: {{ cita[7] }}</p>
+									</div>
+
+									<div class="ag-courses-item_date-box">
+										Fecha:
+										<span class="ag-courses-item_date">    
+											{{ cita[6] }}
+										</span>
+										<br>
+										Hora:
+										<span class="ag-courses-item_date">    
+											{{ cita[4] }}
+										</span>
+									</div>
+									</a>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				{% else %}
+					<p>Usted no tiene citas</p>
+				{% endif %}
+			</div>
         </div>
     </div>
 </body>
