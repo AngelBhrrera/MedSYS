@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Paciente</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,39 +46,100 @@
 <body>
     <!-- Barra superior -->
     {% include 'topbar.html' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <!-- Barra lateral -->
+                {% include 'sidebar.html' %}
+            </div>
 
-    <!-- Contenido principal -->
-    <div class="container">
-        <!-- Barra lateral -->
-        {% include 'sidebar.html' %}
-        
-        <!-- Contenedor principal -->
-        <div class="secondtainer">
-            <h1>Historial de Paciente</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha de Cita</th>
-                        <th>Médico</th>
-                        <th>Enfermedades Diagnosticadas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>2024-04-10</td>
-                        <td>Dr. Pérez</td>
-                        <td>Enfermedad A, Enfermedad B</td>
-                    </tr>
-                    <tr>
-                        <td>2024-03-25</td>
-                        <td>Dra. Gómez</td>
-                        <td>Enfermedad B</td>
-                    </tr>
-                    <!-- Agregar más filas según sea necesario -->
-                </tbody>
-            </table>
+        <!-- Contenido principal -->
+            <div class="col-md-9">
+                <h1>Historial de Consultas</h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Paciente</th>
+                            <th>Enfermedad</th>
+                            <th>Resultado</th>
+                            <!-- Agrega más columnas según tus necesidades -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consulta in historial %}
+                            <tr>
+                                <td>{{ consulta[0] }}</td>
+                                <td>{{ consulta[1] }}{{consulta[2] }}</td>
+                                <td>{{ consulta[3] }}</td>
+                                <td>{{ consulta[4] }}</td>
+                                <!-- Ajusta estas variables según la estructura de tu base de datos -->
+                                <!-- Puedes mostrar más detalles de la consulta aquí -->
+                                <!-- Por ejemplo, signos vitales, síntomas, etc. -->
+                                <!-- Utiliza más columnas de la tabla para mostrar estos detalles -->
+                                <td>
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#detallesConsultaModal{{ consulta[5] }}" data-fecha="{{ consulta[0] }}" data-paciente="{{ consulta[1] }} {{ consulta[2] }}" data-enfermedad="{{ consulta[3] }}" data-resultado="{{ consulta[4] }}">Detalles</button>
+                                    <!-- Aquí se muestra el modal específico para esta consulta -->
+                                    <div class="modal fade" id="detallesConsultaModal{{ consulta[5] }}" tabindex="-1" role="dialog" aria-labelledby="detallesConsultaModalLabel{{ consulta[5] }}" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="detallesConsultaModalLabel{{ consulta[5] }}">Detalles de la Consulta</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5>Detalles de la Consulta</h5>
+                                                    <p>Fecha: <span id="modal-fecha"></span></p>
+                                                    <p>Paciente: <span id="modal-paciente"></span></p>
+                                                    <p>Enfermedad: <span id="modal-enfermedad"></span></p>
+                                                    <p>Resultado de la prueba: <span id="modal-resultado"></span></p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        console.log("testeando ando");
+        $('.modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Botón que activó el modal
+            var modal = $(this);
+    
+            // Extrae los datos de los atributos de datos del botón
+            var fecha = button.data('fecha');
+            var paciente = button.data('paciente');
+            var enfermedad = button.data('enfermedad');
+            var resultado = button.data('resultado');
+    
+            console.log("Fecha:", fecha);
+            console.log("Paciente:", paciente);
+            console.log("Enfermedad:", enfermedad);
+            console.log("Resultado:", resultado);
+    
+    
+            // Actualiza el contenido del modal body con los datos extraídos
+            modal.find('#modal-fecha').text(fecha);
+            modal.find('#modal-paciente').text(paciente);
+            modal.find('#modal-enfermedad').text(enfermedad);
+            modal.find('#modal-resultado').text(resultado);
+        });
+    </script>
+    
 </body>
 </html>
 

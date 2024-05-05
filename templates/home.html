@@ -35,20 +35,36 @@
             <!-- Próximas citas -->
             <h2>Sus próximas citas:</h2>
             <div class="citas">
-                <!-- Recuadro de la primera cita -->
-                <div class="cita">
-                    <!-- Aquí puedes agregar detalles de la cita -->
-                </div>
-
-                <!-- Recuadro de la segunda cita -->
-                <div class="cita">
-                    <!-- Aquí puedes agregar detalles de la cita -->
-                </div>
-
-                <!-- Recuadro de la tercera cita -->
-                <div class="cita">
-                    <!-- Aquí puedes agregar detalles de la cita -->
-                </div>
+                {% if citas %}
+                    {% for cita in citas %}
+                        <div class="ag-format-container">
+                            <div class="ag-courses_box">
+                                <div class="ag-courses_item">
+                                    <a href="#" class="ag-courses-item_link">
+                                    <div class="ag-courses-item_bg"></div>
+                            
+                                    <div class="ag-courses-item_title">  
+                                        {{ cita[5] }}</p>
+                                    </div>
+                            
+                                    <div class="ag-courses-item_date-box">
+                                        Fecha:
+                                        <span class="ag-courses-item_date">    
+                                            {{ cita[6] }}
+                                        </span>
+                                        Hora:
+                                        <span class="ag-courses-item_date">    
+                                            {{ cita[4] }}
+                                        </span>
+                                    </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Usted no tiene citas</p>
+                {% endif %}
             </div>
         </div>
     </div>

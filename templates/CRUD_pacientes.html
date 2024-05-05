@@ -16,6 +16,7 @@
   .btn { padding: 5px 10px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
   .btn-edit { background-color: #FFC107; }
   .btn-delete { background-color: #F44336; }
+  .btn-hist { background-color: #17e9cd; }
   .btn-add { background-color: #16c2d5; color: white; padding: 10px 20px; }
 </style>
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
@@ -60,6 +61,9 @@
 							<button class="btn btn-edit" data-id="{{ usuario }}">Editar</button>
 							<form method="post" action="/{{ role }}/CRUD/Pacientes/eliminar/{{ usuario[0] }}">
 								<input type="submit" class="btn btn-delete" value="Eliminar">
+							</form>
+							<form method="post" action="/{{ role }}/Historial/{{ usuario[0] }}">
+								<input type="submit" class="btn btn-hist" value="Historial">
 							</form>
 						</td>
     				</tr>
@@ -183,4 +187,9 @@
 	});
 </script>
 
+</html>
+		</div>
+	</div>
+
+</body>
 </html>
