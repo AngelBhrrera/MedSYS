@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Usuarios</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<style>
+  body { font-family: Arial, sans-serif; }
+  .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
+  .main-content { margin-left: 200px; padding: 20px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background-color: #16c2d5; color: white; }
+.btn {
+    padding: 5px 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: Arial, sans-serif; /* Asegúrate de que la fuente sea la misma */
+    font-size: 16px; /* Ajusta el tamaño de la fuente según sea necesario */
+  }
+  .btn-edit { background-color: #FFC107; }
+  .btn-delete { background-color: #F44336; }
+  .btn-hist { background-color: #17e9cd; }
+  .btn-add { background-color: #16c2d5; color: white; padding: 10px 20px; }
+   a.btn {  text-decoration: none; color: white; 
+</style>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+<!-- Barra superior -->
+    {% include 'topbar.html' %}
+    
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Barra lateral -->
+        {% include 'sidebar.html' %}
+
+        <!-- Contenido principal -->
+		<div class="main-content">
+			<h1>Citas Pendientes</h1>
+			<table>
+				<tr>
+					<th>Fecha</th>
+					<th>Hora</th>
+					<th>Paciente</th>
+					<th>Médico</th>
+					<th>Acciones</th>
+				</tr>
+				{% for cita in citas %}
+					<tr>
+						<td>{{ cita[6]}}</td>
+						<td>{{ cita[4] }}</td>
+						<td>{{ cita[7]}}</td>
+						<td>{{ cita[8] }}</td>
+						<td>
+						{% if cita[3] == 1 %}
+							<a href="/{{ role }}/Consulta_Medica/{{ cita[0] }}" class="btn btn-hist">Consulta</a>
+						{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	
+		
+	</div>
+
+</body>
+</html>

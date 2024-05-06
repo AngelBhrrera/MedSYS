@@ -72,7 +72,7 @@
 						  <form method="post" action="/{{ role }}/CRUD/Pacientes/eliminar/{{ usuario[0] }}">
 							<input type="submit" class="btn btn-delete" value="Eliminar">
 						  </form>
-						  {% if [session['role']] === 'medico' %}
+						  {% if session.get('role') == "medico" %}
 							<a href="/{{ role }}/Historial/{{ usuario[0] }}" class="btn btn-hist">Historial</a>
 						  {% endif %}
 						</td>

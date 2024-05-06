@@ -263,6 +263,11 @@ def eliminar_entidad(rol, entity, id):
         mysql.connection.commit()
         cursor.close()
         return redirect(request.referrer)
+    if rol in ['medico', 'secretaria'] and entity == 'Citas':
+        cursor = mysql.connection.cursor()
+        cursor.execute('UPDATE citas SET estado = 3 WHERE id_cita = %s', (id, ))
+        mysql.connection.commit()
+        return redirect(request.referrer)
     else:
         return "404 Not Found", 404
     
@@ -302,13 +307,15 @@ def historial(role, action, idp):
             """, (idp,))
        historial = cursor.fetchall()
        return render_template(f'{action.lower()}.html',  historial = historial, role = role)
-    elif role in ['medico'] and action in ['Consulta']:
+    elif role in ['medico'] and action in ['Consulta_Medica']:
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM signos_sintomas WHERE tipo = 1')
         signos = cursor.fetchall()
         cursor2 = mysql.connection.cursor()
         cursor2.execute('SELECT * FROM signos_sintomas WHERE tipo = 2')
-        sintomas = cursor.fetchall()
+        sintomas = cursor2.fetchall()
+        print(signos)
+        print(sintomas)
         return render_template(f'{action.lower()}.html', role = role, signos = signos, sintomas = sintomas)
     else:
        return "404 Not Found", 404
@@ -316,14 +323,7 @@ def historial(role, action, idp):
     
 @app.route('/<string:role>/<string:action>')
 def action(role, action):
-    if role in ['medico','secretaria'] and action in ['Registro_Paciente', 'Seguimiento_Diagnostico']:
-        return render_template(f'{action.lower()}.html')
-    elif role  in ['medico','secretaria'] and action in ['Ver_Citas']:
-        cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM citas')
-        citas = cursor.fetchall()
-        return render_template(f'{action.lower()}.html', citas = citas, role = role)
-    elif role  in ['medico','secretaria'] and action in ['Citas']:
+    if role  in ['medico','secretaria'] and action in ['Citas']:
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM usuarios u WHERE u.role = 1')
         medicos = cursor.fetchall()
@@ -333,8 +333,13 @@ def action(role, action):
         cursor3 = mysql.connection.cursor()
         cursor3.execute('SELECT * FROM detalle_citas')
         citas = cursor3.fetchall()
-        print(citas)
         return render_template(f'{action.lower()}.html', pacientes = pacientes, medicos = medicos, citas=citas, role = role)
+    elif role in ['medico'] and action in ['Consultas']:
+        idu = session['id']
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM detalle_citas WHERE id_medico = %s AND estado = 1 ORDER BY fecha ASC, hora ASC', (idu, ))
+        citas = cursor.fetchall()
+        return render_template(f'{action.lower()}.html', citas=citas, role = role)
     else:
         return "404 Not Found", 404
 

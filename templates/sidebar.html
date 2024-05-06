@@ -17,7 +17,7 @@
 
 	<ul>
 		{% for option in options[session['role']] %}
-			{% if option in ['Historial', 'Seguimiento_Diagnostico', 'Registro_Paciente', 'Citas','Ver_Citas'] %}
+			{% if option in ['Historial', 'Seguimiento_Diagnostico', 'Citas','Consultas'] %}
 				<li><a href="/{{ session['role'] }}/{{ option }}">{{ option }}</a></li>
 			{% else %}
 				<li><a href="/{{ session['role'] }}/CRUD/{{ option }}">{{ option }}</a></li>

@@ -64,7 +64,7 @@
 						<td>{{ cita[9] }}</td>
 						<td>
 							<button class="btn btn-edit" data-id="{{ cita.id }}">Editar</button>
-							<form method="post" action="/{{ role }}/CRUD/Citas/eliminar/{{ cita.id }}">
+							<form method="post" action="/{{ role }}/CRUD/Citas/eliminar/{{ cita[0]}}">
 								<input type="submit" class="btn btn-delete" value="Cancelar">
 							</form>
 						</td>
@@ -131,20 +131,22 @@
 			  </div>
 			  <div class="modal-body">
 				<form id="editarCitaForm" method="post" action="/{{ role }}/CRUD/Citas/editar/">
-					<select id="id_medico" name="id_medico" class="form-input" required>
-						<option value="" disabled selected>Selecciona un médico</option>
-						{% for medico in medicos %}
-							<option value="{{ medico[0] }}">{{ medico[1] }}</option>
-						{% endfor %}
+					<input type="date" id="fecha" name="fecha" placeholder="Fecha" class="form-input" required style="margin-bottom: 10px;">
+					<select id="hora" name="hora" class="form-input" required style="margin-bottom: 10px;">
+						<option value="" disabled selected>Selecciona un horario</option>
+						<option value="1100">11:00</option>
+						<option value="1130">11:30</option>
+						<option value="1200">12:00</option>
+						<option value="1230">12:30</option>
+						<option value="1300">13:00</option>
+						<option value="1330">13:30</option>
+						<option value="1530">15:30</option>
+						<option value="1600">16:00</option>
+						<option value="1630">16:30</option>
+						<option value="1700">17:00</option>
+						<option value="1730">17:30</option>
+						<option value="1800">18:00</option>
 					</select>
-					<select id="id_paciente" name="id_paciente" class="form-input" required>
-						<option value="" disabled selected>Selecciona un paciente</option>
-						{% for paciente in pacientes %}
-							<option value="{{ paciente[0] }}">{{ paciente[1] }} {{ paciente[2] }}</option>
-						{% endfor %}
-					</select>
-					<input type="date" name="fecha" placeholder="Fecha" class="form-input" required>
-					<input type="time" name="hora" placeholder="Hora" class="form-input" required>
 					<textarea name="observaciones" placeholder="Observaciones" class="form-input"></textarea>
 				</form>
 			  </div>

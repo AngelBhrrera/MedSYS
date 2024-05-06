@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Usuarios</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<style>
+	body {
+		font-family: Arial, sans-serif;
+		margin: 0;
+		padding: 0;
+	}
+
+	.input-group {
+		margin-bottom: 20px;
+	}
+	.input-group label {
+		display: block;
+		margin-bottom: 5px;
+	}
+	.input-group select {
+		width: 100%;
+		padding: 10px;
+		margin-bottom: 10px;
+	}
+	.button {
+		padding: 10px 20px;
+		background-color: #007bff; /* Color de fondo del botón */
+		color: white;
+		border: none;
+		cursor: pointer;
+	}
+	.button:hover {
+		background-color: #0056b3; /* Color de fondo del botón al pasar el mouse */
+	}
+</style>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+<!-- Barra superior -->
+    {% include 'topbar.html' %}
+    
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Barra lateral -->
+        {% include 'sidebar.html' %}
+
+        <!-- Contenido principal -->
+		<div class="main-content">
+			<h1>Consulta Médica</h1>
+			<form method="post" action="/ruta/a/tu/funcion">
+				<input type="hidden" name="id_paciente" value="{{ id_paciente }}">
+				<input type="hidden" name="id_consulta" value="{{ id_consulta }}">
+				<div class="input-group">
+					<label for="signos">Signos</label>
+					<select id="signos" name="signos[]" multiple>
+						{% for sintoma in sintomas %}
+							<option value="{{ sintoma[0] }}">{{ sintoma[1] }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="input-group">
+					<label for="sintomas">Sintomas</label>
+					<select id="sintomas" name="sintomas[]" multiple>
+						{% for signo in signos %}
+							<option value="{{ signo[0] }}">{{ signo[1] }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<input type="submit" value="Inferir">
+			</form>
+		</div>
+	
+		
+	</div>
+
+</body>
+</html>
+
