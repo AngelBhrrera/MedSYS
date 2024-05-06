@@ -4,6 +4,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 
+
 app = Flask(__name__)
 
 app.secret_key = '303429043809'
@@ -318,8 +319,7 @@ def historial(role, action, idp):
         cursor3.execute('SELECT id_paciente FROM citas WHERE id_cita = %s', idp)
         id_paciente_tuple = cursor3.fetchone()
         id_paciente = id_paciente_tuple[0]
-
-        return render_template(f'{action.lower()}.html', role = role, signos = signos, sintomas = sintomas, id_cita = idp, id_paciente = id_paciente )
+        return render_template(f'{action.lower()}.html', role = role, signos = signos, sintomas = sintomas, id_cita = idp, id_paciente =id_paciente)
     else:
        return "404 Not Found", 404
    
@@ -345,6 +345,55 @@ def action(role, action):
         return render_template(f'{action.lower()}.html', citas=citas, role = role)
     else:
         return "404 Not Found", 404
+
+
+@app.route('/ruta/a/tu/funcion', methods=['POST'])
+def recibir_datos():
+    id_paciente = request.form['id_paciente']
+    id_cita = request.form['id_cita']
+    signos = request.form.getlist('signos[]')
+    sintomas = request.form.getlist('sintomas[]')
+    
+    cursor = mysql.connection.cursor()
+
+    # Crear la vista totales_inferencia
+    # Este bloque comentado se debe correr la primera vez que hagas un diagnostico y despues comentarlo,
+    # se puede solucionar usando try e importando el modulo MySQLdb
+    # no pude, no me da la cabeza ya, llevo 9 dias sin dormir mas de 4 horas
+
+
+    #cursor.execute("""
+    #    CREATE VIEW totales_inferencia AS 
+    #    SELECT enfermedades.nombre, SUM(signos_sintomas.frecuencia) AS total 
+    #    FROM motor_inferencia 
+    #    JOIN signos_sintomas ON motor_inferencia.id_si = signos_sintomas.id_si 
+    #    JOIN enfermedades ON motor_inferencia.id_enfermedad = enfermedades.id_enfermedad  
+    #   GROUP BY enfermedades.nombre;
+    #""")
+    #db.commit()
+
+    # Fin del codigo que se debe comentar
+
+    # Ejecutar el query para obtener los resultados
+    ids_concatenados = ', '.join(signos + sintomas)
+    cursor.execute(f"""SELECT
+                        enfermedades.nombre,
+                        pruebas.nombre AS pruebas,
+                        SUM(signos_sintomas.frecuencia) AS frecuencia,
+                        totales_inferencia.total, (SUM(signos_sintomas.frecuencia) * 100.0 / totales_inferencia.total) AS porcentaje
+                        FROM motor_inferencia
+                        JOIN signos_sintomas ON motor_inferencia.id_si = signos_sintomas.id_si
+                        JOIN enfermedades ON motor_inferencia.id_enfermedad = enfermedades.id_enfermedad
+                        JOIN totales_inferencia ON totales_inferencia.nombre = enfermedades.nombre
+                        JOIN pruebas ON enfermedades.id_prueba = pruebas.id_prueba
+                        WHERE motor_inferencia.id_si IN ({ids_concatenados}) GROUP BY enfermedades.nombre
+                        ORDER BY porcentaje DESC;
+                """)
+    resultados = cursor.fetchall()
+    print(resultados)
+    # Aqui va el query y eso
+    return render_template('motor.html', id_paciente=id_paciente, id_cita=id_cita, signos=signos, sintomas=sintomas, resultados = resultados)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
