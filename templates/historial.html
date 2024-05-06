@@ -63,14 +63,14 @@
                             <th>Paciente</th>
                             <th>Enfermedad</th>
                             <th>Resultado</th>
-                            <!-- Agrega más columnas según tus necesidades -->
+							<th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for consulta in historial %}
                             <tr>
                                 <td>{{ consulta[0] }}</td>
-                                <td>{{ consulta[1] }}{{consulta[2] }}</td>
+                                <td>{{ consulta[1] }}  {{consulta[2] }}</td>
                                 <td>{{ consulta[3] }}</td>
                                 <td>{{ consulta[4] }}</td>
                                 <!-- Ajusta estas variables según la estructura de tu base de datos -->
