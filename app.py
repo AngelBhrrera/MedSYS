@@ -284,8 +284,8 @@ def relacionar_enfermedadSigno(rol):
         cursor.close()
         return redirect(request.referrer)
 
-@app.route('/<string:role>/Sintomas/relacionar', methods=['POST'])
-def relacionar_enfermedadSintoma(role):
+@app.route('/<string:rol>/Sintomas/relacionar', methods=['POST'])
+def relacionar_enfermedadSintoma(rol):
         id_enfermedad = request.form['enfermedad']
         id_si = request.form['sintoma']
         cursor = mysql.connection.cursor()
@@ -343,195 +343,57 @@ def action(role, action):
         cursor.execute('SELECT * FROM detalle_citas WHERE id_medico = %s AND estado = 1 ORDER BY fecha ASC, hora ASC', (idu, ))
         citas = cursor.fetchall()
         return render_template(f'{action.lower()}.html', citas=citas, role = role)
-    if role  in ['medico'] and action in ['motor_inferencia']:
-        id_paciente = request.form['id_paciente']
-        id_cita = request.form['id_cita']
-        signos = request.form.getlist('signos[]')
-        sintomas = request.form.getlist('sintomas[]')    
-        ids_concatenados = ', '.join(signos + sintomas)
-        
-        cursor = mysql.connection.cursor()
-        cursor.execute(f"""(SELECT * FROM (
-                SELECT
-                    enfermedades.nombre,
-                    pruebas.id_prueba AS id_prueba,
-                    pruebas.nombre AS pruebas,
-                    SUM(signos_sintomas.frecuencia) AS frecuencia,
-                    totales_inferencia.total, 
-                    (SUM(signos_sintomas.frecuencia) * 100.0 / totales_inferencia.total) AS porcentaje,
-                    enfermedades.id_enfermedad
-                FROM 
-                    motor_inferencia
-                JOIN 
-                    signos_sintomas ON motor_inferencia.id_si = signos_sintomas.id_si
-                JOIN 
-                    enfermedades ON motor_inferencia.id_enfermedad = enfermedades.id_enfermedad
-                JOIN 
-                    totales_inferencia ON totales_inferencia.nombre = enfermedades.nombre
-                JOIN 
-                    pruebas ON enfermedades.id_prueba = pruebas.id_prueba
-                WHERE 
-                    motor_inferencia.id_si IN ({ids_concatenados}) 
-                GROUP BY 
-                    enfermedades.nombre, enfermedades.id_prueba, enfermedades.id_enfermedad
-                ORDER BY 
-                    porcentaje DESC
-                LIMIT 3
-            ) AS subquery)
-            UNION
-            (SELECT * FROM (
-                SELECT
-                    enfermedades.nombre,
-                    pruebas.id_prueba AS id_prueba,
-                    pruebas.nombre AS pruebas,
-                    SUM(signos_sintomas.frecuencia) AS frecuencia,
-                    totales_inferencia.total, 
-                    (SUM(signos_sintomas.frecuencia) * 100.0 / totales_inferencia.total) AS porcentaje,
-                    enfermedades.id_enfermedad
-                FROM 
-                    motor_inferencia
-                JOIN 
-                    signos_sintomas ON motor_inferencia.id_si = signos_sintomas.id_si
-                JOIN 
-                    enfermedades ON motor_inferencia.id_enfermedad = enfermedades.id_enfermedad
-                JOIN 
-                    totales_inferencia ON totales_inferencia.nombre = enfermedades.nombre
-                JOIN 
-                    pruebas ON enfermedades.id_prueba = pruebas.id_prueba
-                WHERE 
-                    motor_inferencia.id_si IN ({ids_concatenados}) 
-                GROUP BY 
-                    enfermedades.nombre, enfermedades.id_prueba, enfermedades.id_enfermedad
-                HAVING 
-                    porcentaje >= 50
-            ) AS subquery2);
-                    """)
-        resultados = cursor.fetchall()
-        id_enfermedad = resultados[0]
-        print(id_enfermedad)
-        id_enfermedad2 = id_enfermedad[6]
-        print(id_enfermedad2)
-        id_consulta = crear_consulta(id_cita, id_paciente, id_enfermedad2)
-        crear_listaSi_paciente(signos, sintomas, id_paciente, id_consulta)
-        print("Lista Hecha")
-        actualizar_cita(id_cita)
-        
-        return render_template('motor.html', resultados = resultados)
     else:
         return "404 Not Found", 404
 
-@app.route('/<string:role>/motor_inferencia', methods=['POST'])
-def recibir_datos(role):
+
+@app.route('/ruta/a/tu/funcion', methods=['POST'])
+def recibir_datos():
     id_paciente = request.form['id_paciente']
     id_cita = request.form['id_cita']
     signos = request.form.getlist('signos[]')
-    sintomas = request.form.getlist('sintomas[]')    
-    ids_concatenados = ', '.join(signos + sintomas)
+    sintomas = request.form.getlist('sintomas[]')
     
     cursor = mysql.connection.cursor()
-    cursor.execute(f"""(SELECT * FROM (
-            SELECT
-                enfermedades.nombre,
-                pruebas.id_prueba AS id_prueba,
-                pruebas.nombre AS pruebas,
-                SUM(signos_sintomas.frecuencia) AS frecuencia,
-                totales_inferencia.total, 
-                (SUM(signos_sintomas.frecuencia) * 100.0 / totales_inferencia.total) AS porcentaje,
-                enfermedades.id_enfermedad
-            FROM 
-                motor_inferencia
-            JOIN 
-                signos_sintomas ON motor_inferencia.id_si = signos_sintomas.id_si
-            JOIN 
-                enfermedades ON motor_inferencia.id_enfermedad = enfermedades.id_enfermedad
-            JOIN 
-                totales_inferencia ON totales_inferencia.nombre = enfermedades.nombre
-            JOIN 
-                pruebas ON enfermedades.id_prueba = pruebas.id_prueba
-            WHERE 
-                motor_inferencia.id_si IN ({ids_concatenados}) 
-            GROUP BY 
-                enfermedades.nombre, enfermedades.id_prueba, enfermedades.id_enfermedad
-            ORDER BY 
-                porcentaje DESC
-            LIMIT 3
-        ) AS subquery)
-        UNION
-        (SELECT * FROM (
-            SELECT
-                enfermedades.nombre,
-                pruebas.id_prueba AS id_prueba,
-                pruebas.nombre AS pruebas,
-                SUM(signos_sintomas.frecuencia) AS frecuencia,
-                totales_inferencia.total, 
-                (SUM(signos_sintomas.frecuencia) * 100.0 / totales_inferencia.total) AS porcentaje,
-                enfermedades.id_enfermedad
-            FROM 
-                motor_inferencia
-            JOIN 
-                signos_sintomas ON motor_inferencia.id_si = signos_sintomas.id_si
-            JOIN 
-                enfermedades ON motor_inferencia.id_enfermedad = enfermedades.id_enfermedad
-            JOIN 
-                totales_inferencia ON totales_inferencia.nombre = enfermedades.nombre
-            JOIN 
-                pruebas ON enfermedades.id_prueba = pruebas.id_prueba
-            WHERE 
-                motor_inferencia.id_si IN ({ids_concatenados}) 
-            GROUP BY 
-                enfermedades.nombre, enfermedades.id_prueba, enfermedades.id_enfermedad
-            HAVING 
-                porcentaje >= 50
-        ) AS subquery2);
+
+    # Crear la vista totales_inferencia
+    # Este bloque comentado se debe correr la primera vez que hagas un diagnostico y despues comentarlo,
+    # se puede solucionar usando try e importando el modulo MySQLdb
+    # no pude, no me da la cabeza ya, llevo 9 dias sin dormir mas de 4 horas
+
+
+    #cursor.execute("""
+    #    CREATE VIEW totales_inferencia AS 
+    #    SELECT enfermedades.nombre, SUM(signos_sintomas.frecuencia) AS total 
+    #    FROM motor_inferencia 
+    #    JOIN signos_sintomas ON motor_inferencia.id_si = signos_sintomas.id_si 
+    #    JOIN enfermedades ON motor_inferencia.id_enfermedad = enfermedades.id_enfermedad  
+    #   GROUP BY enfermedades.nombre;
+    #""")
+    #db.commit()
+
+    # Fin del codigo que se debe comentar
+
+    # Ejecutar el query para obtener los resultados
+    ids_concatenados = ', '.join(signos + sintomas)
+    cursor.execute(f"""SELECT
+                        enfermedades.nombre,
+                        pruebas.nombre AS pruebas,
+                        SUM(signos_sintomas.frecuencia) AS frecuencia,
+                        totales_inferencia.total, (SUM(signos_sintomas.frecuencia) * 100.0 / totales_inferencia.total) AS porcentaje
+                        FROM motor_inferencia
+                        JOIN signos_sintomas ON motor_inferencia.id_si = signos_sintomas.id_si
+                        JOIN enfermedades ON motor_inferencia.id_enfermedad = enfermedades.id_enfermedad
+                        JOIN totales_inferencia ON totales_inferencia.nombre = enfermedades.nombre
+                        JOIN pruebas ON enfermedades.id_prueba = pruebas.id_prueba
+                        WHERE motor_inferencia.id_si IN ({ids_concatenados}) GROUP BY enfermedades.nombre
+                        ORDER BY porcentaje DESC;
                 """)
     resultados = cursor.fetchall()
-    id_enfermedad = resultados[0]
-    print(id_enfermedad)
-    id_enfermedad2 = id_enfermedad[6]
-    print(id_enfermedad2)
-    id_consulta = crear_consulta(id_cita, id_paciente, id_enfermedad2)
-    crear_listaSi_paciente(signos, sintomas, id_paciente, id_consulta)
-    print("Lista Hecha")
-    actualizar_cita(id_cita)
-    
-    return render_template('motor.html', resultados = resultados)
+    print(resultados)
+    # Aqui va el query y eso
+    return render_template('motor.html', id_paciente=id_paciente, id_cita=id_cita, signos=signos, sintomas=sintomas, resultados = resultados)
 
-def crear_consulta(idc, idp, ide):
-    cursor2 = mysql.connection.cursor()
-    cursor2.execute('INSERT INTO consultas (id_cita, id_paciente, enfermedad_diagnosticada) VALUES (%s, %s, %s)', (idc, idp, ide,))
-    mysql.connection.commit()
-    id_consulta = cursor2.lastrowid
-    cursor2.close()
-    print(id_consulta)
-    return id_consulta
-
-def actualizar_cita(idc):
-    cursor2 = mysql.connection.cursor()
-    cursor2.execute('UPDATE citas SET estado = 2 WHERE id_cita = %s', (idc,))
-    mysql.connection.commit()
-    cursor2.close()
-    return 0
-
-def crear_listaSi_paciente(signos, sintomas, idp, idc):
-    cursor = mysql.connection.cursor()
-    
-    for signo in signos:
-        query = """
-        INSERT INTO lista_signos_sintomas (id_paciente, id_consulta, id_signo_sintoma)
-        VALUES (%s, %s, %s)
-        """
-        cursor.execute(query, (idp, idc, signo))
-    
-    for sintoma in sintomas:
-        query = """
-        INSERT INTO lista_signos_sintomas (id_paciente, id_consulta, id_signo_sintoma)
-        VALUES (%s, %s, %s)
-        """
-        cursor.execute(query, (idp, idc, sintoma))
-    mysql.connection.commit()
-    cursor.close()
-    return 0
-    
 
 if __name__ == '__main__':
     app.run(debug=True)
