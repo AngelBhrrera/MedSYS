@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Motor de Procesamiento</title>
+    <style>
+        body {
+            background-color: #d4f4f4; /* Fondo azul verdoso claro */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333; /* Color de texto oscuro */
+        }
+        ul {
+            list-style-type: none; /* Eliminar los puntos de la lista */
+            padding: 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            border: 1px solid #ccc; /* Borde de la tabla gris claro */
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd; /* Borde inferior gris claro para las celdas */
+        }
+        th {
+            background-color: #f2f2f2; /* Fondo gris claro para las celdas del encabezado */
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* Fondo gris muy claro para filas pares */
+        }
+        
+        body { font-family: Arial, sans-serif; }
+        .sidebar { width: 200px; background-color: #333; height: 100vh; float: left; color: white; padding: 20px; }
+        .btn-term { 
+            background-color: #0cdbc0;
+            border-radius: 5px; 
+            padding: 10px 20px; 
+            display: inline-block; 
+            text-decoration: none; 
+            color: white; 
+        }
+        a.btn {  text-decoration: none; color: white; }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Barra superior -->
+    {% include 'topbar.html' %}
+    <div class="container">
+        <!-- Barra lateral -->
+        {% include 'sidebar.html' %}
+    
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <h2>Resultados del Procesamiento</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre de la Enfermedad</th>
+                        <th>Frecuencia</th>
+                        <th>Total</th>
+                        <th>Porcentaje</th>
+                        <th>Examen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resultado in resultados %}
+                        <tr>
+                            <td>{{ resultado[0] }}</td>
+                            <td>{{ resultado[2] }}</td>
+                            <td>{{ resultado[3] }}</td>
+                            <td>{{ resultado[4] }}</td>
+                            <td>{{ resultado[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+                    
+            <div style="margin-top: 20px; text-align: right;">
+                <a href="" class="btn btn-term">Terminar</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
