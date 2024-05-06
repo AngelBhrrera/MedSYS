@@ -52,7 +52,7 @@
 					<td>{{ prueba[5] }}</td>
 					<td>
 						<button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editarPruebaModal" data-id="{{ prueba[0] }}" data-nombre="{{ prueba[1] }}" data-descripcion="{{ prueba[2] }}" data-tipo="{{ prueba[3] }}" data-valores_referencia="{{ prueba[4] }}" data-resultado_optimo="{{ prueba[5] }}">Editar</button>
-						<form method="post" action="/CRUD/pruebas/eliminar/{{ prueba[0] }}">
+						<form method="post" action="/{{ role }}/CRUD/Pruebas/eliminar/{{ prueba[0] }}">
 							<input type="submit" class="btn btn-delete" value="Eliminar">
 						</form>
 					</td>
@@ -97,7 +97,7 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
-					<form id="editarPruebaForm" method="post" action="/{{ role }}/CRUD/Pruebas/editar/>
+					<form id="editarPruebaForm" method="post" action="CRUD/Pruebas/editar/>
 						<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
 						<input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
 						<input type="text" name="tipo" placeholder="Tipo" class="form-input" required>
@@ -135,7 +135,7 @@
         $('#editarPruebaModal input[name="valores_referencia"]').val(pruebaValoresRef);
         $('#editarPruebaModal input[name="resultado_optimo"]').val(pruebaResultadoOptimo);
 
-        $('#editarPruebaModal form').attr('action', '/CRUD/pruebas/editar/' + pruebaId);
+        $('#editarPruebaModal form').attr('action', '/{{ role }}/CRUD/Pruebas/editar/' + pruebaId);
 
         $('#editarPruebaModal').modal('show');
     });

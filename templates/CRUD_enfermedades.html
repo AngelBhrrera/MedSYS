@@ -47,7 +47,7 @@
 					<td>{{ enfermedad[4] }}</td>
 					<td>
 						<button class="btn btn-edit" data-id="{{ enfermedad[0] }}"  data-id_prueba="{{ enfermedad[3] }}" data-bs-toggle="modal" data-bs-target="#editarEnfermedadModal">Editar</button>
-						<form method="post" action="/{{ role }}/CRUD/enfermedades/eliminar/{{ enfermedad[0] }}">
+						<form method="post" action="/{{ role }}/CRUD/Enfermedades/eliminar/{{ enfermedad[0] }}">
 							<input type="submit" class="btn btn-delete" value="Eliminar">
 						</form>
 					</td>
@@ -93,7 +93,7 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
-					<form id="editarEnfermedadForm" method="post" action="/{{ role }}/CRUD/Enfermedades/editar">
+					<form id="editarEnfermedadForm" method="post" action="/CRUD/Enfermedades/editar">
 						<input type="text" name="nombre" placeholder="Nombre" class="form-input" required>
 						<input type="text" name="descripcion" placeholder="Descripción" class="form-input" required>
 						<select name="id_prueba" class="form-input" required>
@@ -131,7 +131,7 @@
         $('#editarEnfermedadForm input[name="descripcion"]').val(descripcion);
         $('#editarEnfermedadForm select[name="id_prueba"]').val(idPrueba);
 
-        $('#editarEnfermedadForm').attr('action', '/{{ role }}/CRUD/enfermedades/editar/' + enfermedadId);
+        $('#editarEnfermedadForm').attr('action', '/{{ role }}/CRUD/Enfermedades/editar/' + enfermedadId);
 
         $('#editarEnfermedadModal').modal('show');
     });
