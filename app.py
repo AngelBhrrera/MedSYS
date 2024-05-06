@@ -316,7 +316,7 @@ def historial(role, action, idp):
         cursor2.execute('SELECT * FROM signos_sintomas WHERE tipo = 2')
         sintomas = cursor2.fetchall()
         cursor3 = mysql.connection.cursor()
-        cursor3.execute('SELECT id_paciente FROM citas WHERE id_cita = %s', idp)
+        cursor3.execute('SELECT id_paciente FROM citas WHERE id_cita = %s', (idp, ))
         id_paciente_tuple = cursor3.fetchone()
         id_paciente = id_paciente_tuple[0]
         return render_template(f'{action.lower()}.html', role = role, signos = signos, sintomas = sintomas, id_cita = idp, id_paciente =id_paciente)
