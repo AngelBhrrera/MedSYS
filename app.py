@@ -314,9 +314,11 @@ def historial(role, action, idp):
         cursor2 = mysql.connection.cursor()
         cursor2.execute('SELECT * FROM signos_sintomas WHERE tipo = 2')
         sintomas = cursor2.fetchall()
-        print(signos)
-        print(sintomas)
-        return render_template(f'{action.lower()}.html', role = role, signos = signos, sintomas = sintomas)
+        cursor3 = mysql.connection.cursor()
+        cursor3.execute('SELECT id_paciente FROM citas WHERE tipo = $s', idp)
+        id_paciente = cursor3.fetchone()
+
+        return render_template(f'{action.lower()}.html', role = role, signos = signos, sintomas = sintomas, id_cita = idp, )
     else:
        return "404 Not Found", 404
    
