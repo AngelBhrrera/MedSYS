@@ -64,9 +64,12 @@
 						<td>{{ cita[9] }}</td>
 						<td>
 							<button class="btn btn-edit" data-id="{{ cita.id }}">Editar</button>
+						{% if cita[3] == 1 %}
 							<form method="post" action="/{{ role }}/CRUD/Citas/eliminar/{{ cita[0]}}">
 								<input type="submit" class="btn btn-delete" value="Cancelar">
 							</form>
+						{% endif %}
+							
 						</td>
 					</tr>
 				{% endfor %}
@@ -97,6 +100,7 @@
 					</select>
 					<input type="date" id="fecha" name="fecha" placeholder="Fecha" class="form-input" required style="margin-bottom: 10px;">
 					<select id="hora" name="hora" class="form-input" required style="margin-bottom: 10px;">
+						
 						<option value="" disabled selected>Selecciona un horario</option>
 						<option value="1100">11:00</option>
 						<option value="1130">11:30</option>
@@ -160,49 +164,51 @@
 	</div>
 	
  <script>
-        $(document).ready(function() {
-            $('select').select2();
-            $('#fecha').change(function() {
-                var fecha = $(this).val();
-                $.post('/horarios_disponibles', { fecha: fecha }, function(data) {
-                    var select = $('#hora');
-                    select.empty();
-                    $.each(data, function(index, value) {
-                        select.append('<option value="' + value + '">' + value + '</option>');
-                    });
-                });
-            });
-        });
-
-		function padToTwoDigits(number) {
-			return number.toString().padStart(2, '0');
-		}
-
-		$('.btn-add').click(function() {
-			$('#agregarCitaModal').modal('show');
+	$(document).ready(function() {
+		$('select').select2();
+		$('#fecha, #id_medico').change(function() {
+			var fecha = $('#fecha').val();
+			var medico = $('#id_medico').val();
+			$.post('/horarios_disponibles', { fecha: fecha, id_medico: medico }, function(data) {
+				var select = $('#hora');
+				select.empty();
+				select.append('<option value="" disabled selected>Selecciona un horario</option>'); // Agregamos la opción por defecto
+				$.each(data, function(index, value) {
+					select.append('<option value="' + value + '">' + value + '</option>');
+				});
+			});
 		});
+	});
 
-		$('.btn-edit').click(function() {
+	function padToTwoDigits(number) {
+		return number.toString().padStart(2, '0');
+	}
+
+	$('.btn-add').click(function() {
+		$('#agregarCitaModal').modal('show');
+	});
+
+	$('.btn-edit').click(function() {
+		$('#editarCitaModal').modal('show');
+		var dataString = $(this).data('id');
+		var dataPattern = /(\d+), (\d+), (\d+), '(\d{4})-(\d{2})-(\d{2})', '(\d{4})', '(\w+)', '(\w+)', '(\w+)'/;
+		var dataMatch = dataString.match(dataPattern);
+
+		if (dataMatch) {
+			var dataArray = dataMatch.slice(1); // Elimina el primer elemento que es la cadena completa
+			$('#editarCitaForm select[name="id_medico"]').val(dataArray[1]);
+			$('#editarCitaForm select[name="id_paciente"]').val(dataArray[2]);
+			$('#editarCitaForm input[name="fecha"]').val(dataArray[3] + '-' + padToTwoDigits(dataArray[4]) + '-' + padToTwoDigits(dataArray[5]));
+			$('#editarCitaForm input[name="hora"]').val(dataArray[6]);
+			$('#editarCitaForm textarea[name="observaciones"]').val(dataArray[7]);
+
+			$('#editarCitaForm').attr('action', '/{{ role }}/CRUD/Citas/editar/' + dataArray[0]);
+
 			$('#editarCitaModal').modal('show');
-			var dataString = $(this).data('id');
-			var dataPattern = /(\d+), (\d+), (\d+), '(\d{4})-(\d{2})-(\d{2})', '(\d{4})', '(\w+)', '(\w+)', '(\w+)'/;
-			var dataMatch = dataString.match(dataPattern);
-
-			if (dataMatch) {
-				var dataArray = dataMatch.slice(1); // Elimina el primer elemento que es la cadena completa
-				$('#editarCitaForm select[name="id_medico"]').val(dataArray[1]);
-				$('#editarCitaForm select[name="id_paciente"]').val(dataArray[2]);
-				$('#editarCitaForm input[name="fecha"]').val(dataArray[3] + '-' + padToTwoDigits(dataArray[4]) + '-' + padToTwoDigits(dataArray[5]));
-				$('#editarCitaForm input[name="hora"]').val(dataArray[6]);
-				$('#editarCitaForm textarea[name="observaciones"]').val(dataArray[7]);
-
-				$('#editarCitaForm').attr('action', '/{{ role }}/CRUD/Citas/editar/' + dataArray[0]);
-
-				$('#editarCitaModal').modal('show');
-			} else {
-				console.log("La cadena no coincide con el patrón esperado.");
-			}
-		});
+		} else {
+			console.log("La cadena no coincide con el patrón esperado.");
+		}
+	});
 </script>
 </body>
 </html>

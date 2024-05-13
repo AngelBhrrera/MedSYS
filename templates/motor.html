@@ -50,14 +50,24 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <!-- Barra superior -->
+
     {% include 'topbar.html' %}
     <div class="container">
-        <!-- Barra lateral -->
+
         {% include 'sidebar.html' %}
-    
-        <!-- Contenido principal -->
+   
         <div class="main-content">
+            <input type="hidden" name="id_paciente" value="{{ id_paciente }}">
+            <input type="hidden" name="id_cita" value="{{ id_cita }}">
+            <input type="hidden" name="id_enfermedad" value="{{ id_enfermedad }}">
+            {% for signo in signos %}
+                <input type="hidden" name="signos[]" value="{{ signo }}">
+            {% endfor %}
+            {% for sintoma in sintomas %}
+                <input type="hidden" name="sintomas[]" value="{{ sintoma }}">
+            {% endfor %}
+            
+
             <h2>Resultados del Procesamiento</h2>
             <table>
                 <thead>
@@ -83,10 +93,66 @@
             </table>
                     
            <div style="margin-top: 20px; text-align: right;">
-				<a href="/medico/home" class="btn btn-term">Terminar</a>
+                <a href="javascript:history.back()" class="btn btn-term">Regresar</a>
+                <a href="javascript:;" onclick="enviarDatos()" class="btn btn-term">Terminar</a>
 			</div>
         </div>
     </div>
 </body>
+
+<script type="text/javascript">
+    function enviarDatos() {
+        var id_paciente = document.querySelector('input[name="id_paciente"]').value;
+        var id_cita = document.querySelector('input[name="id_cita"]').value;
+        var id_enfermedad = document.querySelector('input[name="id_enfermedad"]').value;
+        var signos = Array.from(document.querySelectorAll('input[name="signos[]"]')).map(input => input.value);
+        var sintomas = Array.from(document.querySelectorAll('input[name="sintomas[]"]')).map(input => input.value);
+
+        // Crear un formulario oculto
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/medico/terminar_consulta';
+
+
+        var idPacienteInput = document.createElement('input');
+        idPacienteInput.type = 'hidden';
+        idPacienteInput.name = 'id_paciente';
+        idPacienteInput.value = id_paciente;
+        form.appendChild(idPacienteInput);
+
+        var idCitaInput = document.createElement('input');
+        idCitaInput.type = 'hidden';
+        idCitaInput.name = 'id_cita';
+        idCitaInput.value = id_cita;
+        form.appendChild(idCitaInput);
+
+        var idEnfermedadInput = document.createElement('input');
+        idEnfermedadInput.type = 'hidden';
+        idEnfermedadInput.name = 'id_enfermedad';
+        idEnfermedadInput.value = id_enfermedad;
+        form.appendChild(idEnfermedadInput);
+
+        signos.forEach(signo => {
+            var signoInput = document.createElement('input');
+            signoInput.type = 'hidden';
+            signoInput.name = 'signos[]';
+            signoInput.value = signo.trim();
+            form.appendChild(signoInput);
+        });
+
+        sintomas.forEach(sintoma => {
+            var sintomaInput = document.createElement('input');
+            sintomaInput.type = 'hidden';
+            sintomaInput.name = 'sintomas[]';
+            sintomaInput.value = sintoma.trim();
+            form.appendChild(sintomaInput);
+        });
+
+  
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
 </html>
 

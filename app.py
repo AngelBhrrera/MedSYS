@@ -1,9 +1,8 @@
 #pip install flask
 #pip install flask_mysqldb
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_mysqldb import MySQL
-
 
 app = Flask(__name__)
 
@@ -485,17 +484,26 @@ def recibir_datos(role):
         ) AS subquery2);
                 """)
     resultados = cursor.fetchall()
-    id_enfermedad = resultados[0]
-    print(id_enfermedad)
-    id_enfermedad2 = id_enfermedad[6]
-    print(id_enfermedad2)
-    id_consulta = crear_consulta(id_cita, id_paciente, id_enfermedad2)
-    crear_listaSi_paciente(signos, sintomas, id_paciente, id_consulta)
-    print("Lista Hecha")
-    actualizar_cita(id_cita)
+    enfermedad_a = resultados[0]
+    id_enfermedad = enfermedad_a[6]
     
-    return render_template('motor.html', resultados = resultados)
+    print(signos)
+    print(sintomas)
+    
+    return render_template('motor.html', resultados = resultados, id_enfermedad = id_enfermedad, id_paciente = id_paciente, id_cita = id_cita, signos=signos, sintomas=sintomas)
 
+@app.route('/<string:role>/terminar_consulta', methods=['POST'])
+def terminar_consulta(role):
+    id_paciente = request.form['id_paciente']
+    id_cita = request.form['id_cita']
+    id_enfermedad = request.form['id_enfermedad']   
+    signos = request.form.getlist('signos')
+    sintomas = request.form.getlist('sintomas')
+    id_consulta = crear_consulta(id_cita, id_paciente, id_enfermedad)
+    crear_listaSi_paciente(signos, sintomas, id_paciente, id_consulta)
+    actualizar_cita(id_cita)
+    return redirect(url_for('home', role=session["role"],))
+    
 def crear_consulta(idc, idp, ide):
     cursor2 = mysql.connection.cursor()
     cursor2.execute('INSERT INTO consultas (id_cita, id_paciente, enfermedad_diagnosticada) VALUES (%s, %s, %s)', (idc, idp, ide,))
@@ -532,6 +540,22 @@ def crear_listaSi_paciente(signos, sintomas, idp, idc):
     cursor.close()
     return 0
     
+
+@app.route('/horarios_disponibles', methods=['POST'])
+def get_dates():
+    cursor = mysql.connection.cursor()
+    medico = request.form['id_medico']
+    fecha = request.form['fecha']
+    cursor.execute('SELECT hora FROM citas WHERE id_medico = %s AND fecha = %s AND estado != 3', (medico, fecha,))
+    found = cursor.fetchall()
+    horarios_disponibles = [
+        "1100", "1130", "1200", "1230", "1300", "1330", "1530", "1600", "1630", "1700", "1730", "1800"
+    ]
+    
+    horarios_ocupados = [str(hora[0]) for hora in found] 
+    horarios_disponibles = [hora for hora in horarios_disponibles if hora not in horarios_ocupados]
+    return jsonify(horarios_disponibles)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
